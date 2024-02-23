@@ -1,4 +1,4 @@
-### Whats For Dinner
+# Whats For Dinner
 ## About
 
 This is a web application to simply provide up to 7 ingredients and then returning a selection of possible recipies.
