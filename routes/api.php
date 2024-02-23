@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\SpoontacularAPI;
+use App\Http\Controllers\SpoonacularAPI;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/get_recipies', [SpoontacularAPI::class, 'get_recipies']);
+Route::post('/get_recipies', [SpoonacularAPI::class, 'get_recipies']);

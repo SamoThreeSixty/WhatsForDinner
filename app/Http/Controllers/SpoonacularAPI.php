@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class SpoontacularAPI extends Controller
+class SpoonacularAPI extends Controller
 {
     public function get_recipies(Request $request) {
         $data = $request->all();
