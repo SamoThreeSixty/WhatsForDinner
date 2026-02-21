@@ -38,22 +38,26 @@
                 min-height: 65px;
                 padding: 10px 50px 10px 50px;
                 margin: 0 20px;
-                background-color: #0DD98B;
+                background-color: var(--accent);
                 border-radius: 20px;
                 font-size: 2.5rem;
+                font-weight: 600;
                 border-top: none;
                 border-left: none;
-                border-bottom: 3px solid #005348;
-                border-right: 3px solid #005348;
+                border-bottom: 3px solid var(--accent-deep);
+                border-right: 3px solid var(--accent-deep);
 
                 z-index: 100;
-                transition: all .5s;
+                box-shadow: var(--shadow-soft);
+                transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             }
             button:nth-child(1){
                 margin-left: 2.5rem;
             }
             button:hover {
                 background-color: #0feb96;
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-strong);
                 cursor: pointer;
             }
         }

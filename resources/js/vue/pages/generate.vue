@@ -95,17 +95,20 @@
         border: none;
         margin: 0.5rem 1rem;
         padding: 5px 20px;
-        background-color: #0DD98B;
+        background-color: var(--accent);
         border-top: none;
         border-left: none;
-        border-bottom: 3px solid #005348;
-        border-right: 3px solid #005348;
+        border-bottom: 3px solid var(--accent-deep);
+        border-right: 3px solid var(--accent-deep);
         text-decoration: none;
 
-        transition: all 0.5s;
+        box-shadow: var(--shadow-soft);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
     .router-btn:hover {
         background-color: #0feb96;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-strong);
         cursor: pointer;
     }
     .select-ingredients {
@@ -135,13 +138,13 @@
         }
 
         input {
-            background-color: #f2f2f2;
+            background-color: var(--surface);
             width: 90%;
             margin: 0 auto;
             height: 100px;
             font-size: 3rem;
             border: none;
-            border-bottom: 4px solid #00B59C; 
+            border-bottom: 4px solid var(--accent-strong); 
         }
     }
     .suggestions {
@@ -153,7 +156,7 @@
         align-content: flex-start;
 
         div {
-            background-color: #00B59C;
+            background-color: var(--accent-strong);
             border-radius: 10px;
             padding: 0.2rem 0.7rem;
         }
@@ -162,15 +165,15 @@
         flex-basis: 40%;
 
         table {
-            background-color: #f2f2f2;
+            background-color: var(--surface);
             font-size: 2rem;
             display: grid;
             grid-template-rows: 70px 1fr 80px;
             min-height: 500px;
             border-top: none;
             border-left: none;
-            border-bottom: 3px solid #005348;
-            border-right: 3px solid #005348;
+            border-bottom: 3px solid var(--accent-deep);
+            border-right: 3px solid var(--accent-deep);
 
             h4 {
                 font-size: 3rem;
@@ -194,16 +197,19 @@
             border-radius: 10px;
             border: none;
             margin: 0.5rem 1rem;
-            background-color: #0DD98B;
+            background-color: var(--accent);
             border-top: none;
             border-left: none;
-            border-bottom: 3px solid #005348;
-            border-right: 3px solid #005348;
+            border-bottom: 3px solid var(--accent-deep);
+            border-right: 3px solid var(--accent-deep);
 
-            transition: all 0.5s;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
         button:hover {
             background-color: #0feb96;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-strong);
             cursor: pointer;
         }
     }

@@ -56,17 +56,20 @@
         border: none;
         margin: 0.5rem 1rem;
         padding: 5px 20px;
-        background-color: #0DD98B;
+        background-color: var(--accent);
         border-top: none;
         border-left: none;
-        border-bottom: 3px solid #005348;
-        border-right: 3px solid #005348;
+        border-bottom: 3px solid var(--accent-deep);
+        border-right: 3px solid var(--accent-deep);
         text-decoration: none;
 
-        transition: all 0.5s;
+        box-shadow: var(--shadow-soft);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
     a:hover {
         background-color: #0feb96;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-strong);
         cursor: pointer;
     }
     .loading-pannel {
