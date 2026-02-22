@@ -1,4 +1,5 @@
-import './bootstrap';
+import '@src/bootstrap';
+import '@src/styles/app.css';
 import {createApp} from 'vue';
 import {createPinia} from 'pinia';
 
