@@ -1,5 +1,15 @@
 @import 'tailwindcss';
 
+:root {
+    --green-ink: #113c2d;
+    --green-deep: #0f7b4b;
+    --green-solid: #1a9a5d;
+    --green-muted: #436759;
+    --green-panel: rgba(242, 252, 246, 0.88);
+    --lime-pop: #b8ef4f;
+    --cream: #f8fdf8;
+}
+
 html,
 body,
 #app {
@@ -16,10 +26,9 @@ body::before {
     inset: 0;
     z-index: -2;
     pointer-events: none;
-    background:
-        radial-gradient(circle at 20% 18%, rgba(184, 239, 79, 0.5), transparent 38%),
-        radial-gradient(circle at 84% 7%, rgba(82, 191, 116, 0.45), transparent 45%),
-        linear-gradient(145deg, #ecfae8 0%, #c7ecbf 45%, #dff4d6 100%);
+    background: radial-gradient(circle at 20% 18%, rgba(184, 239, 79, 0.5), transparent 38%),
+    radial-gradient(circle at 84% 7%, rgba(82, 191, 116, 0.45), transparent 45%),
+    linear-gradient(145deg, #ecfae8 0%, #c7ecbf 45%, #dff4d6 100%);
 }
 
 body::after {
