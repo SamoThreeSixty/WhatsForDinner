@@ -36,46 +36,46 @@ const routes = [
     // endregion
 
 
-    {
-        path: '/home',
-        name: 'Home',
-        component: () => import('../vue/pages/home.vue'),
-        meta: {
-            requiresAuth: true,
-            requiresVerified: true,
-            tab: 'home'
-        }
-    },
-    {
-        path: '/user',
-        name: 'User',
-        component: () => import('../vue/pages/user.vue'),
-        meta: {
-            requiresAuth: true,
-            requiresVerified: true,
-            tab: 'account'
-        }
-    },
-    {
-        path: '/generate',
-        name: 'Generate',
-        component: () => import('../vue/pages/generate.vue'),
-        meta: {
-            requiresAuth: true,
-            requiresVerified: true,
-            tab: 'pantry'
-        }
-    },
-    {
-        path: '/results',
-        name: 'Results',
-        component: () => import('../vue/pages/results.vue'),
-        meta: {
-            requiresAuth: true,
-            requiresVerified: true,
-            tab: 'recipes'
-        }
-    },
+    // {
+    //     path: '/home',
+    //     name: 'Home',
+    //     component: () => import('../vue/pages/home.vue'),
+    //     meta: {
+    //         requiresAuth: true,
+    //         requiresVerified: true,
+    //         tab: 'home'
+    //     }
+    // },
+    // {
+    //     path: '/user',
+    //     name: 'User',
+    //     component: () => import('../vue/pages/user.vue'),
+    //     meta: {
+    //         requiresAuth: true,
+    //         requiresVerified: true,
+    //         tab: 'account'
+    //     }
+    // },
+    // {
+    //     path: '/generate',
+    //     name: 'Generate',
+    //     component: () => import('../vue/pages/generate.vue'),
+    //     meta: {
+    //         requiresAuth: true,
+    //         requiresVerified: true,
+    //         tab: 'pantry'
+    //     }
+    // },
+    // {
+    //     path: '/results',
+    //     name: 'Results',
+    //     component: () => import('../vue/pages/results.vue'),
+    //     meta: {
+    //         requiresAuth: true,
+    //         requiresVerified: true,
+    //         tab: 'recipes'
+    //     }
+    // },
 
     // Catchall to redirect to /login
     {
