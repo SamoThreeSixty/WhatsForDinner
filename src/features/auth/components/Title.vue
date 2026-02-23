@@ -2,16 +2,16 @@
 
 <template>
     <div class="mb-7 space-y-4 md:mb-8">
-        <div class="flex items-center gap-3">
+        <div class="flex min-w-0 items-center gap-3">
             <span
                 aria-hidden="true"
                 class="grid h-12 w-12 -rotate-6 place-items-center rounded-[14px] bg-gradient-to-br from-lime-400 to-emerald-600 text-[0.86rem] font-extrabold tracking-[0.04em] text-white shadow-[0_10px_24px_rgba(10,105,58,0.28)]"
             >
                 WFD
             </span>
-            <div class="space-y-0.5">
+            <div class="min-w-0 space-y-0.5">
                 <p
-                    class="text-[1.05rem] font-extrabold uppercase tracking-[0.09em] text-transparent bg-gradient-to-r from-emerald-700 to-lime-500 bg-clip-text"
+                    class="break-words text-[1.05rem] font-extrabold uppercase tracking-[0.09em] text-transparent bg-gradient-to-r from-emerald-700 to-lime-500 bg-clip-text"
                 >
                     WhatsForDinner
                 </p>

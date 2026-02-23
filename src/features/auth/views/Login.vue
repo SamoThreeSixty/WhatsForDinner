@@ -5,8 +5,10 @@ import UiInput from '@/components/ui/Input.vue';
 import UiButton from '@/components/ui/Button.vue';
 import UiLabel from '@/components/ui/Label.vue';
 import useAuth from '@/features/auth/composable/useAuth';
+import {useAuthStore} from '@/stores/auth';
 
 const {loading, login, loginForm} = useAuth();
+const authStore = useAuthStore();
 
 </script>
 
@@ -25,6 +27,9 @@ const {loading, login, loginForm} = useAuth();
                 {{ loading ? 'Logging in...' : 'Login To Dashboard' }}
             </UiButton>
         </form>
+
+        <p v-if="authStore.authError" class="text-sm font-medium text-rose-700">{{ authStore.authError }}</p>
+        <p v-if="authStore.authMessage" class="text-sm font-medium text-emerald-800">{{ authStore.authMessage }}</p>
 
         <div class="mt-4 flex flex-wrap gap-4">
             <router-link class="auth-link-btn" to="/register">Create account</router-link>
