@@ -2,6 +2,11 @@ import axios from "axios";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
+export interface ApiErrorResponse {
+    message?: string;
+    errors?: Record<string, string[]>;
+}
+
 export const api = axios.create({
     baseURL: `${apiBaseUrl}/api`,
     headers: {
