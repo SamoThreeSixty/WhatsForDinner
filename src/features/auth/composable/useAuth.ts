@@ -47,12 +47,16 @@ export default function useAuth() {
                 password: loginForm.password
             });
 
+            if (!authStore.isLoggedIn) {
+                return;
+            }
+
             if (!authStore.isVerified) {
                 authStore.authError = 'Please verify your email before accessing the app.';
                 return;
             }
 
-            router.push('/home');
+            await router.push({name: 'app.dashboard'});
         } finally {
             loading.value = false;
         }
