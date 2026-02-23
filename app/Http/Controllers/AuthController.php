@@ -154,6 +154,17 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 
+    public function verify(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'authenticated' => true,
+            'verified' => $user->hasVerifiedEmail(),
+            'user' => $user,
+        ]);
+    }
+
     public function logout(Request $request): JsonResponse
     {
         Auth::guard('web')->logout();

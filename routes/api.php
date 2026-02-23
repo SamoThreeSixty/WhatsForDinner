@@ -13,6 +13,7 @@ Route::post('/auth/email/verification-notification', [AuthController::class, 're
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/user', [AuthController::class, 'me']);
+    Route::get('/auth/verify', [AuthController::class, 'verify']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 
