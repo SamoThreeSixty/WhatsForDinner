@@ -31,6 +31,8 @@ const onInput = (event: Event) => {
 <style scoped>
 .ui-input {
     display: block;
+    width: 100%;
+    min-width: 0;
     border: 1px solid rgba(23, 86, 57, 0.2);
     border-radius: 12px;
     padding: 0.8rem 0.9rem;
