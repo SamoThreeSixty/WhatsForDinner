@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import * as authService from '@/features/auth/services/auth.service';
 import type {LoginForm} from '@/features/auth/types/login-form';
+import type {RegisterForm} from '@/features/auth/types/register-form';
 import type {AuthUser} from "@/features/auth/types/auth-user.ts";
 import axios from "axios";
 import type {ApiErrorResponse} from "@/lib/api.ts";
@@ -75,6 +76,19 @@ export const useAuthStore = defineStore('auth', {
             } catch (error: unknown) {
                 this.clearAuthState();
                 this.authError = getApiErrorMessage(error, 'Unable to authenticate.');
+            }
+        },
+        async register(payload: RegisterForm) {
+            this.authError = '';
+            this.authMessage = '';
+
+            try {
+                const result = await authService.register(payload);
+                this.setUser(result.user);
+                this.authMessage = result.message;
+            } catch (error: unknown) {
+                this.clearAuthState();
+                this.authError = getApiErrorMessage(error, 'Unable to create account.');
             }
         },
         async logout() {
