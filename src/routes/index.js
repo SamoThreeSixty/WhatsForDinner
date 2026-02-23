@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
+import {useAuthStore} from '@/stores/auth';
 
 const routes = [
     // region Auth
@@ -35,47 +36,53 @@ const routes = [
     },
     // endregion
 
-
-    // {
-    //     path: '/home',
-    //     name: 'Home',
-    //     component: () => import('../vue/pages/home.vue'),
-    //     meta: {
-    //         requiresAuth: true,
-    //         requiresVerified: true,
-    //         tab: 'home'
-    //     }
-    // },
-    // {
-    //     path: '/user',
-    //     name: 'User',
-    //     component: () => import('../vue/pages/user.vue'),
-    //     meta: {
-    //         requiresAuth: true,
-    //         requiresVerified: true,
-    //         tab: 'account'
-    //     }
-    // },
-    // {
-    //     path: '/generate',
-    //     name: 'Generate',
-    //     component: () => import('../vue/pages/generate.vue'),
-    //     meta: {
-    //         requiresAuth: true,
-    //         requiresVerified: true,
-    //         tab: 'pantry'
-    //     }
-    // },
-    // {
-    //     path: '/results',
-    //     name: 'Results',
-    //     component: () => import('../vue/pages/results.vue'),
-    //     meta: {
-    //         requiresAuth: true,
-    //         requiresVerified: true,
-    //         tab: 'recipes'
-    //     }
-    // },
+    // region Application
+    {
+        path: '/',
+        component: () => import('../layout/AppLayout.vue'),
+        meta: {
+            requiresAuth: true,
+            requiresVerified: true,
+        },
+        children: [
+            {
+                path: 'dashboard',
+                name: 'app.dashboard',
+                component: () => import('../features/dashboard/views/DashboardHome.vue'),
+            },
+            {
+                path: 'ingredients',
+                name: 'app.ingredients',
+                component: () => import('../features/dashboard/views/IngredientsView.vue'),
+            },
+            {
+                path: 'recipes',
+                name: 'app.recipes',
+                component: () => import('../features/dashboard/views/RecipesView.vue'),
+            },
+            {
+                path: 'shopping',
+                name: 'app.shopping',
+                component: () => import('../features/dashboard/views/ShoppingListView.vue'),
+            },
+            {
+                path: 'calendar',
+                name: 'app.calendar',
+                component: () => import('../features/dashboard/views/CalendarView.vue'),
+            },
+            {
+                path: 'account',
+                name: 'app.account',
+                component: () => import('../features/dashboard/views/AccountView.vue'),
+            },
+            {
+                path: 'settings',
+                name: 'app.settings',
+                component: () => import('../features/dashboard/views/SettingsView.vue'),
+            }
+        ]
+    },
+    // endregion
 
     // Catchall to redirect to /login
     {
@@ -87,6 +94,33 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes
+});
+
+const guestRouteNames = new Set([
+    'auth.login',
+    'auth.register',
+    'auth.forgot_password',
+    'auth.reset_password',
+]);
+
+router.beforeEach(async (to) => {
+    const authStore = useAuthStore();
+
+    if (!authStore.hasCheckedSession) {
+        await authStore.verify();
+    }
+
+    if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+        return {name: 'auth.login'};
+    }
+
+    if (to.meta.requiresVerified && !authStore.isVerified) {
+        return {name: 'auth.login'};
+    }
+
+    if (to.name && guestRouteNames.has(String(to.name)) && authStore.isLoggedIn && authStore.isVerified) {
+        return {name: 'app.dashboard'};
+    }
 });
 
 export default router;
