@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Card from '@src/features/auth/components/Card.vue';
-import Title from '@src/features/auth/components/Title.vue';
-import UiInput from '@src/components/ui/Input.vue';
-import UiButton from '@src/components/ui/Button.vue';
-import UiLabel from '@src/components/ui/Label.vue';
-import useAuth from '@src/features/auth/composable/useAuth';
+import Card from '@/features/auth/components/Card.vue';
+import Title from '@/features/auth/components/Title.vue';
+import UiInput from '@/components/ui/Input.vue';
+import UiButton from '@/components/ui/Button.vue';
+import UiLabel from '@/components/ui/Label.vue';
+import useAuth from '@/features/auth/composable/useAuth';
 
 const {loading, login, loginForm} = useAuth();
 

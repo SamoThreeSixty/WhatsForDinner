@@ -1,6 +1,6 @@
 import {reactive, ref} from "vue";
 import type {LoginForm} from "../types/login-form.js";
-import {useAuthStore} from '@src/stores/auth';
+import {useAuthStore} from '@/stores/auth';
 import {useRouter} from "vue-router";
 import type {RegisterForm} from "../types/register-form.js";
 import type {ResetPasswordForm} from "../types/reset-password-form.js";

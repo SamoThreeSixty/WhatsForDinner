@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@src/styles/auth.css';
+@import '@/styles/auth.css';
 
 :root {
     --green-ink: #113c2d;
