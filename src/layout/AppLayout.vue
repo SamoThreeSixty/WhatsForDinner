@@ -20,10 +20,6 @@ const layoutFeedback = computed(() => feedbackStore.forScope(layoutFeedbackScope
 
 const navItems = [
     {name: 'app.dashboard', label: 'Dashboard'},
-    {name: 'app.ingredients', label: 'Ingredients'},
-    {name: 'app.recipes', label: 'Recipes'},
-    {name: 'app.shopping', label: 'Shopping'},
-    {name: 'app.calendar', label: 'Calendar'}
 ];
 
 function isActive(name: string) {
@@ -77,8 +73,8 @@ async function logout() {
 </script>
 
 <template>
-    <main class="mx-auto box-border grid min-w-0 min-h-dvh w-full max-w-[1200px] gap-4 px-3 py-3 sm:px-4 md:grid-cols-[220px_1fr] md:gap-5 md:px-6 md:py-5 lg:grid-cols-[250px_1fr]">
-        <header class="max-h-15 sticky top-1 z-20 flex items-center gap-1.5 rounded-lg border border-emerald-900/10 bg-white/80 px-2 py-1.5 shadow-[0_6px_14px_rgba(8,72,43,0.1)] backdrop-blur md:hidden">
+    <main class="mx-auto box-border grid min-w-0 min-h-dvh w-full max-w-300 gap-4 px-3 py-3 sm:px-4 md:grid-cols-[220px_1fr] md:gap-5 md:px-6 md:py-5 lg:grid-cols-[250px_1fr]">
+        <header class="sticky top-1 z-20 flex items-center gap-1.5 rounded-lg border border-emerald-900/10 bg-white/80 px-2 py-1.5 shadow-[0_6px_14px_rgba(8,72,43,0.1)] backdrop-blur md:hidden">
             <button
                 type="button"
                 class="grid h-8 w-8 place-items-center rounded-md border border-emerald-900/15 bg-white text-emerald-900 shadow-[0_3px_8px_rgba(8,72,43,0.1)]"
@@ -114,12 +110,12 @@ async function logout() {
             :class="isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'"
         >
             <div class="mb-4 flex items-center gap-3 rounded-2xl border border-emerald-800/10 bg-emerald-50/80 p-3">
-                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-lime-400 to-emerald-600 text-sm font-extrabold text-white">
+                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-linear-to-br from-lime-400 to-emerald-600 text-sm font-extrabold text-white">
                     {{ userInitial }}
                 </span>
                 <div class="min-w-0">
-                    <p class="truncate text-sm font-bold text-[var(--green-ink)]">{{ authStore.username || 'User' }}</p>
-                    <p class="truncate text-xs text-[var(--green-muted)]">{{ authStore.email }}</p>
+                    <p class="truncate text-sm font-bold text-(--green-ink)">{{ authStore.username || 'User' }}</p>
+                    <p class="truncate text-xs text-(--green-muted)">{{ authStore.email }}</p>
                 </div>
             </div>
 

@@ -48,8 +48,10 @@ const routes = [
             {
                 path: 'dashboard',
                 name: 'app.dashboard',
-                component: () => import('../features/dashboard/views/DashboardHome.vue'),
+                component: () => import('../features/dashboard/views/DashboardView.vue'),
             },
+
+            // region TODO: Other features
             {
                 path: 'ingredients',
                 name: 'app.ingredients',
@@ -80,6 +82,7 @@ const routes = [
                 name: 'app.settings',
                 component: () => import('../features/dashboard/views/SettingsView.vue'),
             }
+            // endregion
         ]
     },
     // endregion
