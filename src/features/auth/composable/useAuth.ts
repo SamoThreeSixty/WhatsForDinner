@@ -19,7 +19,7 @@ export default function useAuth() {
         name: '',
         email: '',
         password: '',
-        confirm_password: ''
+        password_confirmation: ''
     });
 
     const resetPasswordForm = reactive<ResetPasswordForm>({
@@ -63,7 +63,41 @@ export default function useAuth() {
     }
 
     async function register() {
-        console.log("TODO: register")
+        if (
+            loading.value ||
+            !registerForm.name ||
+            !registerForm.email ||
+            !registerForm.password ||
+            !registerForm.password_confirmation
+        ) {
+            return;
+        }
+
+        loading.value = true;
+        error.value = null;
+
+        try {
+            await authStore.register({
+                name: registerForm.name.trim(),
+                email: registerForm.email.trim(),
+                password: registerForm.password,
+                password_confirmation: registerForm.password_confirmation
+            });
+
+            if (!authStore.isLoggedIn) {
+                return;
+            }
+
+            if (!authStore.isVerified) {
+                authStore.authMessage = authStore.authMessage || 'Account created. Verify your email to continue.';
+                await router.push({name: 'auth.login'});
+                return;
+            }
+
+            await router.push({name: 'app.dashboard'});
+        } finally {
+            loading.value = false;
+        }
     }
 
     async function forgottenPassword() {

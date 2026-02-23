@@ -1,6 +1,7 @@
 import {api} from "@/lib/api";
 import {http} from "@/lib/http";
 import type {LoginForm} from "@/features/auth/types/login-form";
+import type {RegisterForm} from "@/features/auth/types/register-form";
 import type {AuthUser} from "@/features/auth/types/auth-user";
 
 export interface AuthSessionResponse {
@@ -23,6 +24,12 @@ async function ensureCsrfCookie(): Promise<void> {
 export async function login(loginPayload: LoginForm) {
     await ensureCsrfCookie();
     const response = await api.post<AuthSessionResponse>('/auth/login', loginPayload);
+    return response.data;
+}
+
+export async function register(registerPayload: RegisterForm) {
+    await ensureCsrfCookie();
+    const response = await api.post<AuthSessionResponse>('/auth/register', registerPayload);
     return response.data;
 }
 
