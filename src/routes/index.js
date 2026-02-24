@@ -52,36 +52,36 @@ const routes = [
             },
 
             // region TODO: Other features
-            {
-                path: 'ingredients',
-                name: 'app.ingredients',
-                component: () => import('../features/dashboard/views/IngredientsView.vue'),
-            },
-            {
-                path: 'recipes',
-                name: 'app.recipes',
-                component: () => import('../features/dashboard/views/RecipesView.vue'),
-            },
-            {
-                path: 'shopping',
-                name: 'app.shopping',
-                component: () => import('../features/dashboard/views/ShoppingListView.vue'),
-            },
-            {
-                path: 'calendar',
-                name: 'app.calendar',
-                component: () => import('../features/dashboard/views/CalendarView.vue'),
-            },
-            {
-                path: 'account',
-                name: 'app.account',
-                component: () => import('../features/dashboard/views/AccountView.vue'),
-            },
-            {
-                path: 'settings',
-                name: 'app.settings',
-                component: () => import('../features/dashboard/views/SettingsView.vue'),
-            }
+            // {
+            //     path: 'ingredients',
+            //     name: 'app.ingredients',
+            //     component: () => import('../features/dashboard/views/IngredientsView.vue'),
+            // },
+            // {
+            //     path: 'recipes',
+            //     name: 'app.recipes',
+            //     component: () => import('../features/dashboard/views/RecipesView.vue'),
+            // },
+            // {
+            //     path: 'shopping',
+            //     name: 'app.shopping',
+            //     component: () => import('../features/dashboard/views/ShoppingListView.vue'),
+            // },
+            // {
+            //     path: 'calendar',
+            //     name: 'app.calendar',
+            //     component: () => import('../features/dashboard/views/CalendarView.vue'),
+            // },
+            // {
+            //     path: 'account',
+            //     name: 'app.account',
+            //     component: () => import('../features/dashboard/views/AccountView.vue'),
+            // },
+            // {
+            //     path: 'settings',
+            //     name: 'app.settings',
+            //     component: () => import('../features/dashboard/views/SettingsView.vue'),
+            // }
             // endregion
         ]
     },
