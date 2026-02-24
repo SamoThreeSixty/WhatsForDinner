@@ -1,0 +1,8 @@
+{
+  // Solution-style config so TS/IDE picks the right settings per context.
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
