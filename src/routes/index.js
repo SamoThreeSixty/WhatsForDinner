@@ -1,11 +1,15 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import {useAuthStore} from '@/stores/auth';
+import {useHouseholdStore} from '@/stores/household';
 
 const routes = [
     // region Auth
     {
         path: '/',
         component: () => import('../layout/AuthLayout.vue'),
+        meta: {
+            requiresHousehold: false
+        },
         children: [
             {
                 path: '',
@@ -31,6 +35,33 @@ const routes = [
                 name: 'auth.reset_password',
                 component: () => import('../features/auth/views/ResetPassword.vue'),
                 props: true
+            },
+            {
+                path: 'access',
+                name: 'auth.access',
+                component: () => import('../features/households/views/AccessView.vue'),
+                meta: {
+                    requiresAuth: true,
+                    requiresVerified: true,
+                },
+            },
+            {
+                path: 'access/add',
+                name: 'auth.household_add',
+                component: () => import('../features/households/views/HouseholdAdd.vue'),
+                meta: {
+                    requiresAuth: true,
+                    requiresVerified: true,
+                },
+            },
+            {
+                path: 'access/join',
+                name: 'auth.household_join',
+                component: () => import('../features/households/views/HouseholdJoin.vue'),
+                meta: {
+                    requiresAuth: true,
+                    requiresVerified: true,
+                },
             }
         ],
     },
@@ -52,11 +83,11 @@ const routes = [
             },
 
             // region TODO: Other features
-            // {
-            //     path: 'ingredients',
-            //     name: 'app.ingredients',
-            //     component: () => import('../features/dashboard/views/IngredientsView.vue'),
-            // },
+            {
+                path: 'ingredients',
+                name: 'app.ingredients',
+                component: () => import('../features/dashboard/views/IngredientsView.vue'),
+            },
             // {
             //     path: 'recipes',
             //     name: 'app.recipes',
@@ -108,6 +139,7 @@ const guestRouteNames = new Set([
 
 router.beforeEach(async (to) => {
     const authStore = useAuthStore();
+    const householdStore = useHouseholdStore();
 
     if (!authStore.hasCheckedSession) {
         await authStore.verify();
@@ -121,8 +153,33 @@ router.beforeEach(async (to) => {
         return {name: 'auth.login'};
     }
 
+    if (authStore.isLoggedIn && authStore.isVerified) {
+        await householdStore.ensureActiveHousehold();
+
+        const routeRequiresHousehold = to.meta.requiresHousehold ?? false;
+        const needsHouseholdGate = !householdStore.activeHouseholdId;
+
+        if (needsHouseholdGate && to.name !== 'auth.access' && to.name !== 'auth.household_add' && to.name !== 'auth.household_join') {
+            return {name: 'auth.access'};
+        }
+
+        if (!needsHouseholdGate && (to.name === 'auth.access' || to.name === 'auth.household_add' || to.name === 'auth.household_join')) {
+            return {name: 'app.dashboard'};
+        }
+
+        if (routeRequiresHousehold && needsHouseholdGate) {
+            return {name: 'auth.access'};
+        }
+    }
+
     if (to.name && guestRouteNames.has(String(to.name)) && authStore.isLoggedIn && authStore.isVerified) {
-        return {name: 'app.dashboard'};
+        if (!householdStore.hasCheckedHouseholds) {
+            await householdStore.ensureActiveHousehold();
+        }
+
+        return householdStore.activeHouseholdId
+            ? {name: 'app.dashboard'}
+            : {name: 'auth.access'};
     }
 });
 
