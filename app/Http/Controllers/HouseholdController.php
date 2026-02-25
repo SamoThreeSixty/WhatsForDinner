@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\HouseholdRequest;
 use App\Http\Resources\HouseholdResource;
 use App\Models\Household;
+use Illuminate\Support\Str;
 
 class HouseholdController extends Controller
 {
@@ -15,7 +16,14 @@ class HouseholdController extends Controller
 
     public function store(HouseholdRequest $request)
     {
-        return new HouseholdResource(Household::create($request->validated()));
+        $validated = $request->validated();
+
+        return new HouseholdResource(Household::create([
+            'name' => $validated['name'],
+            'slug' => $this->makeUniqueSlug($validated['name']),
+            'locale' => $validated['locale'] ?? 'en',
+            'currency' => strtoupper($validated['currency'] ?? 'GBP'),
+        ]));
     }
 
     public function show(Household $household)
@@ -25,7 +33,13 @@ class HouseholdController extends Controller
 
     public function update(HouseholdRequest $request, Household $household)
     {
-        $household->update($request->validated());
+        $validated = $request->validated();
+
+        $household->update([
+            'name' => $validated['name'],
+            'locale' => $validated['locale'] ?? $household->locale,
+            'currency' => strtoupper($validated['currency'] ?? $household->currency),
+        ]);
 
         return new HouseholdResource($household);
     }
@@ -35,5 +49,21 @@ class HouseholdController extends Controller
         $household->delete();
 
         return response()->json();
+    }
+
+    private function makeUniqueSlug(string $name): string
+    {
+        $base = Str::slug($name);
+        $base = $base !== '' ? $base : 'household';
+
+        $slug = $base;
+        $suffix = 1;
+
+        while (Household::where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $suffix;
+            $suffix++;
+        }
+
+        return $slug;
     }
 }

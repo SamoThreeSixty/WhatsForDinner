@@ -9,7 +9,9 @@ class HouseholdRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
+            'name' => ['required', 'string', 'max:255'],
+            'locale' => ['nullable', 'string', 'max:12'],
+            'currency' => ['nullable', 'string', 'max:3'],
         ];
     }
 
