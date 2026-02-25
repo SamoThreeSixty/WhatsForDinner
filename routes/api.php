@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HouseholdMembershipController;
+use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\SpoonacularAPI;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +19,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum', 'verified', 'household.context'])->group(function () {
     Route::post('/get_recipies', [SpoonacularAPI::class, 'get_recipies']);
+
+    Route::get('/households/my', [HouseholdMembershipController::class, 'myHouseholds']);
+    Route::post('/households', [HouseholdMembershipController::class, 'createHousehold']);
+    Route::post('/households/active', [HouseholdMembershipController::class, 'setActiveHousehold']);
+    Route::post('/households/join-requests', [HouseholdMembershipController::class, 'requestJoin']);
+    Route::get('/households/{household}/join-requests', [HouseholdMembershipController::class, 'pendingRequests']);
+    Route::post('/household-memberships/{membership}/approve', [HouseholdMembershipController::class, 'approve']);
+    Route::post('/household-memberships/{membership}/reject', [HouseholdMembershipController::class, 'reject']);
+
+    Route::middleware('household.required')->apiResource('ingredients', IngredientController::class);
 });
