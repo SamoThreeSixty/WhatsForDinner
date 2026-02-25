@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
+use App\Models\Traits\BelongsToHousehold;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ingredient extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToHousehold;
 
     protected $fillable = [
+        'household_id',
         'name',
         'category',
         'location',
@@ -29,4 +32,9 @@ class Ingredient extends Model
         'purchased_at' => 'datetime',
         'expires_at' => 'datetime',
     ];
+
+    public function household(): BelongsTo
+    {
+        return $this->belongsTo(Household::class);
+    }
 }
