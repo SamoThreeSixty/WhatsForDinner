@@ -35,7 +35,6 @@ class HouseholdMembershipController extends Controller
         $household = Household::create([
             'name' => $validated['name'],
             'slug' => $this->makeUniqueSlug($validated['name']),
-            'join_code' => $this->makeUniqueJoinCode(),
             'locale' => $validated['locale'] ?? 'en',
             'currency' => strtoupper($validated['currency'] ?? 'GBP'),
         ]);
