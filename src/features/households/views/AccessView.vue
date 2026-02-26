@@ -5,9 +5,11 @@ import Card from '@/features/auth/components/Card.vue';
 import Title from '@/features/auth/components/Title.vue';
 import UiButton from '@/components/ui/Button.vue';
 import {useHouseholdStore} from '@/stores/household';
+import {useAuthStore} from '@/stores/auth';
 
 const router = useRouter();
 const householdStore = useHouseholdStore();
+const authStore = useAuthStore();
 
 const selectedHouseholdId = ref<number | null>(null);
 const selecting = ref(false);
@@ -48,6 +50,11 @@ async function selectHouseholdAndContinue() {
     } finally {
         selecting.value = false;
     }
+}
+
+async function logoutToLogin() {
+    await authStore.logout();
+    await router.push({name: 'auth.login'});
 }
 </script>
 
@@ -111,5 +118,9 @@ async function selectHouseholdAndContinue() {
                 </UiButton>
             </div>
         </section>
+
+        <div class="route-links">
+            <button type="button" class="auth-link-btn" @click="logoutToLogin">Logout and go to login</button>
+        </div>
     </Card>
 </template>
