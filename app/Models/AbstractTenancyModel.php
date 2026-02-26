@@ -27,8 +27,9 @@ class AbstractTenancyModel extends Model implements TenancyOwnedModel
         return 'household_id';
     }
 
-    public static function booted(): void {
-        static::addGlobalScope('tenant', HouseholdTenancyScope::class);
-        static::observe([HouseholdTenancyObserver::class]);
+    protected static function booted(): void
+    {
+        static::addGlobalScope(HouseholdTenancyScope::class);
+        static::observe(HouseholdTenancyObserver::class);
     }
 }
