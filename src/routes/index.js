@@ -88,6 +88,11 @@ const routes = [
                 name: 'app.ingredients',
                 component: () => import('../features/dashboard/views/IngredientsView.vue'),
             },
+            {
+                path: 'household/manage',
+                name: 'app.household_manage',
+                component: () => import('../features/households/views/ManagementView.vue'),
+            },
             // {
             //     path: 'recipes',
             //     name: 'app.recipes',
