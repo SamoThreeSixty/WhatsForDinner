@@ -15,24 +15,24 @@ const quickActions = [
         routeName: 'app.ingredients',
         icon: 'Larder'
     },
-    {
-        title: 'Recipes saved and generate',
-        description: 'Keep family favorites and generate meals from available ingredients.',
-        routeName: 'app.recipes',
-        icon: 'Recipes'
-    },
-    {
-        title: 'Shopping list',
-        description: 'Auto-build lists from your weekly plan and what is currently missing.',
-        routeName: 'app.shopping',
-        icon: 'List'
-    },
-    {
-        title: 'Calendar',
-        description: 'Assign meals by day so the whole household can follow the same plan.',
-        routeName: 'app.calendar',
-        icon: 'Planner'
-    }
+    // {
+    //     title: 'Recipes saved and generate',
+    //     description: 'Keep family favorites and generate meals from available ingredients.',
+    //     routeName: 'app.recipes',
+    //     icon: 'Recipes'
+    // },
+    // {
+    //     title: 'Shopping list',
+    //     description: 'Auto-build lists from your weekly plan and what is currently missing.',
+    //     routeName: 'app.shopping',
+    //     icon: 'List'
+    // },
+    // {
+    //     title: 'Calendar',
+    //     description: 'Assign meals by day so the whole household can follow the same plan.',
+    //     routeName: 'app.calendar',
+    //     icon: 'Planner'
+    // }
 ];
 </script>
 
