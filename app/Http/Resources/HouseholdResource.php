@@ -17,7 +17,7 @@ class HouseholdResource extends JsonResource
             'slug' => $this->slug,
             'locale' => $this->locale,
             'currency' => $this->currency,
-            'new_members' => $this->open_to_new_members,
+            'new_members' => $this->new_members,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

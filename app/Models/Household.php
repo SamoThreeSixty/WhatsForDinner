@@ -17,6 +17,7 @@ class Household extends Model
         'slug',
         'locale',
         'currency',
+        'new_members',
     ];
 
     public function memberships(): HasMany
@@ -29,5 +30,10 @@ class Household extends Model
         return $this->belongsToMany(User::class, 'household_memberships')
             ->withPivot(['role', 'status', 'approved_at', 'approved_by'])
             ->withTimestamps();
+    }
+
+    public function accesses(): HasMany
+    {
+        return $this->hasMany(HouseholdAccess::class);
     }
 }

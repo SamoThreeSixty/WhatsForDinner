@@ -20,9 +20,10 @@ class HouseholdController extends Controller
 
         return new HouseholdResource(Household::create([
             'name' => $validated['name'],
-            'slug' => $this->makeUniqueSlug($validated['name']),
+            'slug' => (string) Str::uuid(),
             'locale' => $validated['locale'] ?? 'en',
             'currency' => strtoupper($validated['currency'] ?? 'GBP'),
+            'new_members' => true,
         ]));
     }
 
@@ -49,21 +50,5 @@ class HouseholdController extends Controller
         $household->delete();
 
         return response()->json();
-    }
-
-    private function makeUniqueSlug(string $name): string
-    {
-        $base = Str::slug($name);
-        $base = $base !== '' ? $base : 'household';
-
-        $slug = $base;
-        $suffix = 1;
-
-        while (Household::where('slug', $slug)->exists()) {
-            $slug = $base . '-' . $suffix;
-            $suffix++;
-        }
-
-        return $slug;
     }
 }
