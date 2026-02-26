@@ -34,9 +34,8 @@ ENV COMPOSER_MEMORY_LIMIT=-1
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install and build Vue
+# Install npm packages
 RUN npm install
-RUN npm run build
 
 EXPOSE 8000
 

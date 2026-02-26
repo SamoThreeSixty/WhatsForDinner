@@ -4,7 +4,8 @@ import type {LoginForm} from '@/features/auth/types/login-form';
 import type {RegisterForm} from '@/features/auth/types/register-form';
 import type {AuthUser} from "@/features/auth/types/auth-user.ts";
 import axios from "axios";
-import type {ApiErrorResponse} from "@/lib/api.ts";
+import {useHouseholdStore} from '@/stores/household';
+import {getApiErrorMessage} from "@/lib/errors.ts";
 
 export interface AuthState {
     isLoggedIn: boolean;
@@ -16,21 +17,6 @@ export interface AuthState {
     user: AuthUser | null;
     authError: string;
     authMessage: string;
-}
-
-function getFirstValidationError(errors?: Record<string, string[]>) {
-    return errors
-        ? Object.values(errors).flat().find((message) => message.length > 0)
-        : undefined;
-}
-
-function getApiErrorMessage(error: unknown, fallback: string) {
-    if (!axios.isAxiosError<ApiErrorResponse>(error)) {
-        return fallback;
-    }
-
-    const firstValidationError = getFirstValidationError(error.response?.data?.errors);
-    return firstValidationError ?? error.response?.data?.message ?? fallback;
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -47,6 +33,8 @@ export const useAuthStore = defineStore('auth', {
     }),
     actions: {
         clearAuthState() {
+            const householdStore = useHouseholdStore();
+
             this.isLoggedIn = false;
             this.isVerified = false;
             this.userId = null;
@@ -55,6 +43,8 @@ export const useAuthStore = defineStore('auth', {
             this.user = null;
             this.authError = '';
             this.authMessage = '';
+
+            householdStore.clear();
         },
         setUser(user: AuthUser) {
             this.isLoggedIn = true;

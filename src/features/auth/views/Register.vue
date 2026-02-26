@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {computed} from 'vue';
 import Card from '@/features/auth/components/Card.vue';
 import Title from '@/features/auth/components/Title.vue';
 import AuthFeedback from '@/features/auth/components/AuthFeedback.vue';
@@ -8,11 +9,25 @@ import UiLabel from '@/components/ui/Label.vue';
 import useAuth from '@/features/auth/composable/useAuth';
 
 const {loading, feedback, registerForm, register} = useAuth();
+const props = withDefaults(
+    defineProps<{
+        invite_token: string | null
+    }>(),
+    {
+        invite_token: null
+    }
+);
+
+const hasAccessToken = computed(() => Boolean(props.invite_token && props.invite_token.trim().length > 0));
 </script>
 
 <template>
     <Card>
         <Title/>
+
+        <p v-if="hasAccessToken" class="mb-3 rounded-lg border border-emerald-700/25 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
+            Invite token detected. Register with this email to join the invited household.
+        </p>
 
         <form class="login-form" @submit.prevent="register">
             <UiLabel for="register-name">Name</UiLabel>
@@ -46,6 +61,7 @@ const {loading, feedback, registerForm, register} = useAuth();
                      type="password"
                      required
             />
+
 
             <UiButton class="auth-primary-btn" type="submit" :disabled="loading">
                 {{ loading ? 'Creating account...' : 'Create Account' }}

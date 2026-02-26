@@ -2,12 +2,14 @@
 import {computed, ref} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
 import {useAuthStore} from '@/stores/auth';
+import {useHouseholdStore} from '@/stores/household';
 import {useFeedbackStore} from '@/stores/feedback';
 import AuthFeedback from '@/features/auth/components/AuthFeedback.vue';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const householdStore = useHouseholdStore();
 const feedbackStore = useFeedbackStore();
 
 const isLoggingOut = ref(false);
@@ -20,6 +22,8 @@ const layoutFeedback = computed(() => feedbackStore.forScope(layoutFeedbackScope
 
 const navItems = [
     {name: 'app.dashboard', label: 'Dashboard'},
+    {name: 'app.ingredients', label: 'Ingredients'},
+    {name: 'app.household_manage', label: 'Household'},
 ];
 
 function isActive(name: string) {
@@ -149,6 +153,14 @@ async function logout() {
                         v-if="isUserMenuOpen"
                         class="absolute inset-x-0 bottom-full z-10 mb-2 grid gap-1 rounded-xl border border-emerald-900/12 bg-white/95 p-2 shadow-[0_14px_30px_rgba(8,72,43,0.22)] backdrop-blur"
                     >
+                        <button
+                            v-if="householdStore.hasMultipleHouseholds"
+                            type="button"
+                            class="rounded-lg border border-transparent px-3 py-2 text-left text-sm font-medium text-emerald-900 hover:border-emerald-900/15 hover:bg-emerald-50/70"
+                            @click="goToRoute('auth.access')"
+                        >
+                            Switch household
+                        </button>
                         <button
                             type="button"
                             class="rounded-lg border border-transparent px-3 py-2 text-left text-sm font-medium text-emerald-900 hover:border-emerald-900/15 hover:bg-emerald-50/70"
