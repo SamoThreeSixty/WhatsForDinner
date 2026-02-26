@@ -73,12 +73,12 @@ export const useHouseholdStore = defineStore('household', {
             }
         },
 
-        async requestJoin(joinCode: string) {
+        async requestJoin(slug: string) {
             this.error = '';
             this.message = '';
 
             try {
-                const result = await householdService.requestHouseholdJoin(joinCode.trim().toUpperCase());
+                const result = await householdService.requestHouseholdJoin(slug.trim());
                 this.message = result.message;
             } catch (error: unknown) {
                 this.error = getApiErrorMessage(error, 'Unable to submit join request.');

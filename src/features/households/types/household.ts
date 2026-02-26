@@ -2,7 +2,7 @@ export interface Household {
     id: number;
     name: string;
     slug?: string | null;
-    join_code?: string | null;
+    new_members?: boolean;
     locale?: string | null;
     currency?: string | null;
 }

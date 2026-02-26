@@ -14,9 +14,9 @@ export async function setActiveHousehold(householdId: number) {
     return response.data;
 }
 
-export async function requestHouseholdJoin(joinCode: string) {
+export async function requestHouseholdJoin(slug: string) {
     const response = await api.post<{ message: string }>('/households/join-requests', {
-        join_code: joinCode,
+        slug,
     });
 
     return response.data;
