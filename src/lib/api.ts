@@ -15,3 +15,21 @@ export const api = axios.create({
     withCredentials: true,
 })
 
+export function saveActiveHousehold(householdId: number | null) {
+    if (householdId === null) {
+        window.localStorage.removeItem('active_household_id');
+        return;
+    }
+
+    window.localStorage.setItem('active_household_id', String(householdId));
+}
+
+api.interceptors.request.use((config) => {
+    const householdId = window.localStorage.getItem('active_household_id');
+
+    if (householdId) {
+        config.headers['X-Household-Id'] = householdId;
+    }
+
+    return config;
+});
