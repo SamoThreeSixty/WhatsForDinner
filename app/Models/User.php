@@ -56,4 +56,9 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withPivot(['role', 'status', 'approved_at', 'approved_by'])
             ->withTimestamps();
     }
+
+    public function householdAccessInvites(): HasMany
+    {
+        return $this->hasMany(HouseholdAccess::class, 'invited_by');
+    }
 }
