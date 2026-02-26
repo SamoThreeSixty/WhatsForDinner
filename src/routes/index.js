@@ -23,6 +23,13 @@ const routes = [
             {
                 path: 'register',
                 name: 'auth.register',
+                props: (route) => ({
+                    invite_token: typeof route.query.access_token === 'string'
+                        ? route.query.access_token
+                        : typeof route.query.invite_token === 'string'
+                            ? route.query.invite_token
+                        : null,
+                }),
                 component: () => import('../features/auth/views/Register.vue')
             },
             {

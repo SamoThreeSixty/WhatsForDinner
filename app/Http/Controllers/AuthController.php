@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HouseholdAccess;
+use App\Models\HouseholdMembership;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -21,11 +24,48 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'invite_token' => ['nullable', 'string', 'min:20'],
         ]);
+
+        $email = strtolower($validated['email']);
+        $providedInviteToken = trim((string) ($validated['invite_token'] ?? ''));
+
+        $pendingInviteForEmail = HouseholdAccess::query()
+            ->where('email', $email)
+            ->where('status', HouseholdAccess::STATUS_PENDING)
+            ->latest('id')
+            ->first();
+
+        $inviteToRedeem = null;
+
+        if ($pendingInviteForEmail) {
+            if ($providedInviteToken === '') {
+                throw ValidationException::withMessages([
+                    'invite_token' => ['An invite token is required to register this invited email address.'],
+                ]);
+            }
+
+            $inviteToRedeem = HouseholdAccess::query()
+                ->where('token', $providedInviteToken)
+                ->where('status', HouseholdAccess::STATUS_PENDING)
+                ->first();
+
+            if (!$inviteToRedeem || strtolower($inviteToRedeem->email) !== $email) {
+                throw ValidationException::withMessages([
+                    'invite_token' => ['The invite token is invalid for this email address.'],
+                ]);
+            }
+
+            if ($inviteToRedeem->expires_at && $inviteToRedeem->expires_at->isPast()) {
+                throw ValidationException::withMessages([
+                    'invite_token' => ['The invite token has expired.'],
+                ]);
+            }
+        }
 
         $user = User::create([
             'name' => $validated['name'],
-            'email' => $validated['email'],
+            'email' => $email,
             'password' => Hash::make($validated['password']),
         ]);
 
@@ -33,6 +73,25 @@ class AuthController extends Controller
 
         Auth::login($user, true);
         $request->session()->regenerate();
+
+        if ($inviteToRedeem) {
+            $membership = HouseholdMembership::firstOrNew([
+                'household_id' => $inviteToRedeem->household_id,
+                'user_id' => $user->id,
+            ]);
+
+            $membership->role = HouseholdMembership::ROLE_MEMBER;
+            $membership->status = HouseholdMembership::STATUS_APPROVED;
+            $membership->approved_at = Carbon::now();
+            $membership->approved_by = $inviteToRedeem->invited_by;
+            $membership->save();
+
+            $inviteToRedeem->status = HouseholdAccess::STATUS_ACCEPTED;
+            $inviteToRedeem->accepted_at = Carbon::now();
+            $inviteToRedeem->save();
+
+            $request->session()->put('active_household_id', $inviteToRedeem->household_id);
+        }
 
         return response()->json([
             'message' => 'Account created successfully. Please verify your email.',
