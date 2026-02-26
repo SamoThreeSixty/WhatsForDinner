@@ -143,6 +143,10 @@ const guestRouteNames = new Set([
 ]);
 
 router.beforeEach(async (to) => {
+    if (to.name === 'auth.logout') {
+        return;
+    }
+
     const authStore = useAuthStore();
     const householdStore = useHouseholdStore();
 
