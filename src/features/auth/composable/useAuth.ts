@@ -9,6 +9,8 @@ import type {ForgottenPasswordForm} from "../types/forgotten-password-form.js";
 import axios from "axios";
 import type {ApiErrorResponse} from "@/lib/api.ts";
 import {useFeedbackStore} from '@/stores/feedback';
+import {redeemHouseholdInvite} from '@/features/households/services/household-management.service';
+import {useHouseholdStore} from '@/stores/household';
 
 function getFirstValidationError(errors?: Record<string, string[]>) {
     return errors
@@ -28,6 +30,20 @@ function getApiErrorMessage(error: unknown, fallback: string) {
 interface UseAuthOptions {
     feedbackScope?: string;
     feedbackInstanceId?: string;
+}
+
+function resolveAccessTokenFromRoute(route: ReturnType<typeof useRoute>): string {
+    const accessToken = route.query.access_token;
+    if (typeof accessToken === 'string' && accessToken.trim() !== '') {
+        return accessToken.trim();
+    }
+
+    const inviteToken = route.query.invite_token;
+    if (typeof inviteToken === 'string' && inviteToken.trim() !== '') {
+        return inviteToken.trim();
+    }
+
+    return '';
 }
 
 export default function useAuth(options?: UseAuthOptions) {
@@ -55,6 +71,7 @@ export default function useAuth(options?: UseAuthOptions) {
     });
 
     const authStore = useAuthStore();
+    const householdStore = useHouseholdStore();
     const feedbackStore = useFeedbackStore();
     const router = useRouter();
     const route = useRoute();
@@ -114,6 +131,19 @@ export default function useAuth(options?: UseAuthOptions) {
                 return;
             }
 
+            const inviteToken = resolveAccessTokenFromRoute(route);
+            if (inviteToken) {
+                try {
+                    const redeem = await redeemHouseholdInvite(inviteToken);
+                    householdStore.activeHouseholdId = redeem.active_household_id;
+                    await householdStore.fetchMyHouseholds();
+                    await router.push({name: 'app.dashboard'});
+                    return;
+                } catch (inviteError: unknown) {
+                    setErrorFeedback(getApiErrorMessage(inviteError, 'Unable to accept household invite after login.'));
+                }
+            }
+
             await router.push({name: 'app.dashboard'});
         } finally {
             loading.value = false;
@@ -139,7 +169,8 @@ export default function useAuth(options?: UseAuthOptions) {
                 name: registerForm.name.trim(),
                 email: registerForm.email.trim(),
                 password: registerForm.password,
-                password_confirmation: registerForm.password_confirmation
+                password_confirmation: registerForm.password_confirmation,
+                invite_token: resolveAccessTokenFromRoute(route) || undefined,
             });
 
             if (!authStore.isLoggedIn) {
@@ -151,7 +182,11 @@ export default function useAuth(options?: UseAuthOptions) {
                 const message = authStore.authMessage || 'Account created. Verify your email to continue.';
                 authStore.authMessage = message;
                 setSuccessFeedback(message);
-                await router.push({name: 'auth.login'});
+                const accessToken = resolveAccessTokenFromRoute(route);
+                await router.push({
+                    name: 'auth.login',
+                    query: accessToken ? {access_token: accessToken} : undefined,
+                });
                 return;
             }
 
