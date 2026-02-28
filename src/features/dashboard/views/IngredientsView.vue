@@ -2,6 +2,8 @@
 import {computed, onMounted, reactive, ref} from 'vue';
 import axios from 'axios';
 import PageHeader from '@/components/PageHeader.vue';
+import SearchSelection from '@/components/ui/SearchSelection.vue';
+import type {SearchOption} from '@/components/ui/SearchSelection.vue';
 import type {ApiErrorResponse} from '@/lib/api';
 import {
     createIngredient,
@@ -17,6 +19,9 @@ const message = ref('');
 const error = ref('');
 const editingId = ref<number | null>(null);
 const ingredients = ref<Ingredient[]>([]);
+const ingredientNameOptions = ref<SearchOption[]>([]);
+const listSearchQuery = ref('');
+const listSearchTimer = ref<number | null>(null);
 
 const unitTypeOptions: UnitType[] = ['count', 'mass', 'volume'];
 const unitCodeMap: Record<UnitType, string[]> = {
@@ -69,6 +74,17 @@ function resetForm() {
     editingId.value = null;
 }
 
+async function loadIngredientNameOptions(query: string): Promise<SearchOption[]> {
+    try {
+        const results = await listIngredients(query, 20);
+        const names = Array.from(new Set(results.map((item) => item.name)));
+        return names.map((name) => ({label: name, value: name}));
+    } catch (err: unknown) {
+        error.value = getApiErrorMessage(err, 'Unable to search ingredients.');
+        return [];
+    }
+}
+
 function toPayload(): IngredientPayload {
     const quantity = Number(form.quantity);
 
@@ -99,12 +115,12 @@ function startEdit(item: Ingredient) {
     resetFeedback();
 }
 
-async function fetchIngredients() {
+async function fetchIngredients(search?: string) {
     loading.value = true;
     resetFeedback();
 
     try {
-        ingredients.value = await listIngredients();
+        ingredients.value = await listIngredients(search ?? listSearchQuery.value, 100);
     } catch (err: unknown) {
         error.value = getApiErrorMessage(err, 'Unable to load ingredients.');
     } finally {
@@ -112,13 +128,32 @@ async function fetchIngredients() {
     }
 }
 
+function onListSearchInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    listSearchQuery.value = target.value;
+
+    if (listSearchTimer.value !== null) {
+        window.clearTimeout(listSearchTimer.value);
+    }
+
+    listSearchTimer.value = window.setTimeout(() => {
+        fetchIngredients(listSearchQuery.value);
+    }, 250);
+}
+
 async function submitForm() {
     if (saving.value) {
         return;
     }
 
-    saving.value = true;
     resetFeedback();
+
+    if (!form.name.trim()) {
+        error.value = 'Ingredient name is required.';
+        return;
+    }
+
+    saving.value = true;
 
     try {
         if (editingId.value) {
@@ -159,6 +194,11 @@ async function removeIngredient(id: number) {
 }
 
 onMounted(fetchIngredients);
+onMounted(() => {
+    loadIngredientNameOptions('').then((options) => {
+        ingredientNameOptions.value = options;
+    });
+});
 </script>
 
 <template>
@@ -175,7 +215,14 @@ onMounted(fetchIngredients);
             </h2>
 
             <form class="mt-3 grid gap-2 md:grid-cols-2" @submit.prevent="submitForm">
-                <input v-model="form.name" type="text" required placeholder="Name" class="rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm" />
+                <SearchSelection
+                    v-model="form.name"
+                    class="md:col-span-2"
+                    :options="ingredientNameOptions"
+                    :fetch-options="loadIngredientNameOptions"
+                    placeholder="Type ingredient name to search"
+                    no-results-text="No ingredients found"
+                />
                 <input v-model="form.quantity" type="number" step="0.001" min="0" required placeholder="Quantity" class="rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm" />
 
                 <select v-model="form.unit_type" class="rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm">
@@ -209,12 +256,20 @@ onMounted(fetchIngredients);
         </section>
 
         <section class="rounded-2xl border border-emerald-800/10 bg-white/78 p-4 shadow-[0_10px_22px_rgba(8,72,43,0.1)] md:p-5">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-3">
                 <h2 class="text-xs font-semibold uppercase tracking-[0.11em] text-emerald-800/85">All ingredients</h2>
-                <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" :disabled="loading" @click="fetchIngredients">
+                <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" :disabled="loading" @click="fetchIngredients()">
                     {{ loading ? 'Refreshing...' : 'Refresh' }}
                 </button>
             </div>
+
+            <input
+                :value="listSearchQuery"
+                type="text"
+                placeholder="Type to search ingredients..."
+                class="mt-3 w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm"
+                @input="onListSearchInput"
+            />
 
             <p v-if="!loading && ingredients.length === 0" class="mt-3 text-sm text-[var(--green-muted)]">No ingredients yet.</p>
 
