@@ -6,32 +6,28 @@ use App\Enums\UnitType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Ingredient extends Model
+class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'ingredient_id',
+        'company',
         'name',
-        'category',
+        'unit_type',
+        'unit_options',
+        'unit_default',
     ];
 
     protected $casts = [
         'unit_type' => UnitType::class,
-        'quantity' => 'decimal:3',
-        'purchased_at' => 'datetime',
-        'expires_at' => 'datetime',
+        'unit_options' => 'array',
     ];
 
-    public function household(): BelongsTo
+    public function ingredient(): BelongsTo
     {
-        return $this->belongsTo(Household::class);
-    }
-
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Ingredient::class);
     }
 }
