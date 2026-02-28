@@ -6,25 +6,20 @@ export interface SearchOption {
     value: string | number;
 }
 
-type FetchOptionsFn = (query: string) => Promise<SearchOption[]>;
-
 const props = withDefaults(defineProps<{
     modelValue?: string | number | null;
     options: SearchOption[];
-    fetchOptions?: FetchOptionsFn;
+    loading?: boolean;
     placeholder?: string;
     noResultsText?: string;
-    loading?: boolean;
     disabled?: boolean;
     clearable?: boolean;
-    debounceMs?: number;
 }>(), {
     placeholder: 'Search...',
     noResultsText: 'No results found',
     loading: false,
     disabled: false,
     clearable: true,
-    debounceMs: 250,
 });
 
 const emit = defineEmits<{
@@ -38,21 +33,6 @@ const inputRef = ref<HTMLInputElement | null>(null);
 const isOpen = ref(false);
 const query = ref('');
 const highlightedIndex = ref(-1);
-const searchTimer = ref<number | null>(null);
-const internalLoading = ref(false);
-const remoteOptions = ref<SearchOption[]>([]);
-const requestId = ref(0);
-
-const allOptions = computed(() => {
-    const merged = [...props.options, ...remoteOptions.value];
-    const unique = new Map<string, SearchOption>();
-
-    merged.forEach((option) => {
-        unique.set(String(option.value), option);
-    });
-
-    return Array.from(unique.values());
-});
 
 const selectedOption = computed(() => {
     if (props.modelValue === null || props.modelValue === undefined || props.modelValue === '') {
@@ -60,21 +40,7 @@ const selectedOption = computed(() => {
     }
 
     const value = String(props.modelValue);
-    return allOptions.value.find((option) => String(option.value) === value) ?? null;
-});
-
-const filteredOptions = computed(() => {
-    if (props.fetchOptions) {
-        return remoteOptions.value;
-    }
-
-    const normalized = query.value.trim().toLowerCase();
-
-    if (!normalized) {
-        return props.options;
-    }
-
-    return props.options.filter((option) => option.label.toLowerCase().includes(normalized));
+    return props.options.find((option) => String(option.value) === value) ?? null;
 });
 
 const showClearButton = computed(() => {
@@ -85,8 +51,6 @@ const showClearButton = computed(() => {
     return query.value.trim().length > 0 || selectedOption.value !== null;
 });
 
-const isLoading = computed(() => props.loading || internalLoading.value);
-
 watch(() => props.modelValue, (value) => {
     if (document.activeElement === inputRef.value) {
         return;
@@ -95,46 +59,13 @@ watch(() => props.modelValue, (value) => {
     query.value = selectedOption.value?.label ?? String(value ?? '');
 });
 
-async function runRemoteSearch(value: string) {
-    if (!props.fetchOptions) {
-        return;
-    }
-
-    requestId.value += 1;
-    const currentId = requestId.value;
-    internalLoading.value = true;
-
-    try {
-        const results = await props.fetchOptions(value);
-        if (currentId === requestId.value) {
-            remoteOptions.value = results;
-            highlightedIndex.value = results.length > 0 ? 0 : -1;
-        }
-    } finally {
-        if (currentId === requestId.value) {
-            internalLoading.value = false;
-        }
-    }
-}
-
-function queueSearch(value: string) {
-    if (searchTimer.value !== null) {
-        window.clearTimeout(searchTimer.value);
-    }
-
-    searchTimer.value = window.setTimeout(() => {
-        emit('search', value);
-        runRemoteSearch(value);
-    }, props.debounceMs);
-}
-
 function openMenu() {
     if (props.disabled) {
         return;
     }
 
     isOpen.value = true;
-    highlightedIndex.value = filteredOptions.value.length > 0 ? 0 : -1;
+    highlightedIndex.value = props.options.length > 0 ? 0 : -1;
 }
 
 function closeMenu() {
@@ -146,7 +77,7 @@ function onInput(event: Event) {
     const target = event.target as HTMLInputElement;
     query.value = target.value;
     emit('update:modelValue', query.value);
-    queueSearch(query.value);
+    emit('search', query.value);
 
     if (!isOpen.value) {
         openMenu();
@@ -172,7 +103,7 @@ function onKeydown(event: KeyboardEvent) {
             openMenu();
             return;
         }
-        highlightedIndex.value = Math.min(highlightedIndex.value + 1, filteredOptions.value.length - 1);
+        highlightedIndex.value = Math.min(highlightedIndex.value + 1, props.options.length - 1);
         return;
     }
 
@@ -192,9 +123,9 @@ function onKeydown(event: KeyboardEvent) {
             return;
         }
 
-        if (highlightedIndex.value >= 0 && filteredOptions.value[highlightedIndex.value]) {
+        if (highlightedIndex.value >= 0 && props.options[highlightedIndex.value]) {
             event.preventDefault();
-            const selected = filteredOptions.value[highlightedIndex.value];
+            const selected = props.options[highlightedIndex.value];
 
             if (selected) {
                 selectOption(selected);
@@ -210,18 +141,12 @@ function onKeydown(event: KeyboardEvent) {
 
 function onFocus() {
     openMenu();
-    if (props.fetchOptions && remoteOptions.value.length === 0) {
-        queueSearch(query.value);
-    }
 }
 
 function clearSelection() {
     query.value = '';
     emit('update:modelValue', '');
     emit('search', '');
-    if (props.fetchOptions) {
-        runRemoteSearch('');
-    }
     openMenu();
     inputRef.value?.focus();
 }
@@ -244,9 +169,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-    if (searchTimer.value !== null) {
-        window.clearTimeout(searchTimer.value);
-    }
     document.removeEventListener('mousedown', onClickOutside);
 });
 </script>
@@ -279,10 +201,10 @@ onBeforeUnmount(() => {
         </div>
 
         <div v-if="isOpen" class="search-selection__menu">
-            <p v-if="isLoading" class="search-selection__state">Searching...</p>
-            <p v-else-if="filteredOptions.length === 0" class="search-selection__state">{{ noResultsText }}</p>
+            <p v-if="loading" class="search-selection__state">Searching...</p>
+            <p v-else-if="options.length === 0" class="search-selection__state">{{ noResultsText }}</p>
             <button
-                v-for="(option, index) in filteredOptions"
+                v-for="(option, index) in options"
                 v-else
                 :key="String(option.value)"
                 type="button"
