@@ -9,8 +9,14 @@ interface ItemResponse<T> {
     data: T;
 }
 
-export async function listIngredients() {
-    const response = await api.get<CollectionResponse<Ingredient>>('/ingredients');
+export async function listIngredients(search?: string, limit?: number) {
+    const response = await api.get<CollectionResponse<Ingredient>>('/ingredients', {
+        params: {
+            q: search?.trim() || undefined,
+            limit,
+        },
+    });
+
     return response.data.data;
 }
 
