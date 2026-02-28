@@ -5,12 +5,27 @@ namespace App\Http\Controllers;
 use App\Http\Requests\IngredientRequest;
 use App\Http\Resources\IngredientResource;
 use App\Models\Ingredient;
+use Illuminate\Http\Request;
 
 class IngredientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return IngredientResource::collection(Ingredient::all());
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $search = isset($validated['q']) ? trim(mb_strtolower($validated['q'])) : '';
+        $limit = $validated['limit'] ?? 50;
+
+        $query = Ingredient::query()->orderBy('name');
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.$search.'%');
+        }
+
+        return IngredientResource::collection($query->limit($limit)->get());
     }
 
     public function store(IngredientRequest $request)
