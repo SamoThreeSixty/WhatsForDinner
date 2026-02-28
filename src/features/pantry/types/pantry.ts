@@ -1,6 +1,6 @@
 export type UnitType = 'mass' | 'volume' | 'count';
 
-export interface Ingredient {
+export interface Pantry {
     id: number;
     name: string;
     category: string | null;
@@ -15,7 +15,7 @@ export interface Ingredient {
     updated_at: string;
 }
 
-export interface IngredientPayload {
+export interface PantryPayload {
     name: string;
     quantity: number;
     unit_type: UnitType;

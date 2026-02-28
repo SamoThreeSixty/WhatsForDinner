@@ -10,15 +10,15 @@ import {
     deleteIngredient,
     listIngredients,
     updateIngredient,
-} from '@/features/dashboard/services/ingredient.service';
-import type {Ingredient, IngredientPayload, UnitType} from '@/features/dashboard/types/ingredient';
+} from '@/features/pantry/services/pantry.service.ts';
+import type {Pantry, PantryPayload, UnitType} from '@/features/pantry/types/pantry.ts';
 
 const loading = ref(false);
 const saving = ref(false);
 const message = ref('');
 const error = ref('');
 const editingId = ref<number | null>(null);
-const ingredients = ref<Ingredient[]>([]);
+const ingredients = ref<Pantry[]>([]);
 const ingredientNameOptions = ref<SearchOption[]>([]);
 const listSearchQuery = ref('');
 const listSearchTimer = ref<number | null>(null);
@@ -85,7 +85,7 @@ async function loadIngredientNameOptions(query: string): Promise<SearchOption[]>
     }
 }
 
-function toPayload(): IngredientPayload {
+function toPayload(): PantryPayload {
     const quantity = Number(form.quantity);
 
     return {
@@ -101,7 +101,7 @@ function toPayload(): IngredientPayload {
     };
 }
 
-function startEdit(item: Ingredient) {
+function startEdit(item: Pantry) {
     editingId.value = item.id;
     form.name = item.name;
     form.quantity = String(item.quantity);
