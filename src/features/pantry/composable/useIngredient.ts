@@ -7,9 +7,10 @@ export function useIngredient() {
     const loading = ref<boolean>(false);
     const error = ref<string | null>(null);
 
+    const ingredientSearchTimer = ref<number | null>(null);
+    const selectedIngredient = ref<number | null>(null);
     const query = ref<string>('');
     const ingredientOptions = ref<IngredientOption[]>([])
-
 
     async function loadIngredientOptions() {
         loading.value = true
@@ -25,11 +26,34 @@ export function useIngredient() {
         }
     }
 
+    async function onIngredientSearchInput(value: string) {
+        query.value = value;
+
+        if (ingredientSearchTimer.value !== null) {
+            window.clearTimeout(ingredientSearchTimer.value);
+        }
+
+        ingredientSearchTimer.value = window.setTimeout(async () => {
+            await loadIngredientOptions();
+        }, 250);
+    }
+
+    function clearTimer() {
+        if (ingredientSearchTimer.value !== null) {
+            window.clearTimeout(ingredientSearchTimer.value);
+        }
+
+    }
+
     return {
         loading,
         error,
         query,
+        selectedIngredient,
         loadIngredientOptions,
-        ingredientOptions
+        onIngredientSearchInput,
+        ingredientOptions,
+
+        clearTimer
     }
 }
