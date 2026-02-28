@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import {onBeforeUnmount, onMounted, ref} from 'vue';
+import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import SearchSelection from '@/components/ui/SearchSelection.vue';
 import PantryItem from "@/features/pantry/components/PantryItem.vue";
 import Input from "@/components/ui/Input.vue";
 import {useInventoryList} from "@/features/pantry/composable/useInventry.ts";
 import {useIngredient} from "@/features/pantry/composable/useIngredient.ts";
+import {useProduct} from "@/features/pantry/composable/useProduct.ts";
 
 const inventory = useInventoryList();
 onMounted(() => inventory.getInventoryItems());
@@ -13,36 +14,18 @@ onMounted(() => inventory.getInventoryItems());
 const ingredient = useIngredient();
 onMounted(() => ingredient.loadIngredientOptions());
 
-const form = ref<{
-    name: string
-}>({
-    name: ''
+const product = useProduct();
+
+watch(ingredient.selectedIngredient, async (ingredientId) => {
+    product.selectedProduct.value = '';
+    product.query.value = '';
+    product.selectedIngredient.value = ingredientId;
 });
-
-const ingredientSearchTimer = ref<number | null>(null);
-
-function onIngredientSearchInput(value: string) {
-    ingredient.query.value = value;
-
-    if (ingredientSearchTimer.value !== null) {
-        window.clearTimeout(ingredientSearchTimer.value);
-    }
-
-    ingredientSearchTimer.value = window.setTimeout(() => {
-        ingredient.loadIngredientOptions();
-    }, 250);
-}
 
 onBeforeUnmount(() => {
-    if (ingredientSearchTimer.value !== null) {
-        window.clearTimeout(ingredientSearchTimer.value);
-    }
+    ingredient.clearTimer();
+    product.clearTimer();
 });
-
-function onListSearchInput(event: Event) {
-    const target = event.target as HTMLInputElement;
-    inventory.searchQuery.value = target.value;
-}
 </script>
 
 <template>
@@ -58,14 +41,26 @@ function onListSearchInput(event: Event) {
 
             <form class="mt-3 grid gap-2 md:grid-cols-2">
                 <SearchSelection
-                    v-model="form.name"
+                    v-model="ingredient.selectedIngredient.value"
                     class="md:col-span-2"
                     :options="ingredient.ingredientOptions.value"
                     :loading="ingredient.loading.value"
                     placeholder="Type ingredient name to search"
                     no-results-text="No ingredients found"
-                    @search="onIngredientSearchInput"
+                    @search="ingredient.onIngredientSearchInput"
                 />
+
+                <SearchSelection
+                    v-if="ingredient.selectedIngredient.value !== null"
+                    v-model="product.selectedProduct.value"
+                    class="md:col-span-2"
+                    :options="product.productOptions.value"
+                    :loading="product.loading.value"
+                    placeholder="Type product name to search"
+                    no-results-text="No products found"
+                    @search="product.onProductSearchInput"
+                />
+
             </form>
 
         </section>
