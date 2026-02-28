@@ -12,16 +12,8 @@ class Ingredient extends AbstractTenancyModel
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'household_id',
         'name',
         'category',
-        'location',
-        'unit_type',
-        'unit',
-        'quantity',
-        'purchased_at',
-        'expires_at',
-        'batch_reference',
     ];
 
     protected $casts = [
