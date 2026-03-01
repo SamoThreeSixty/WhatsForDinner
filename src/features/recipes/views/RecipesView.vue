@@ -2,6 +2,7 @@
 import {onBeforeUnmount, onMounted, ref} from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import Input from '@/components/ui/Input.vue';
+import MultiSelect from '@/components/ui/MultiSelect.vue';
 import RecipeEditorModal from '@/features/recipes/components/RecipeEditorModal.vue';
 import {useRecipes} from '@/features/recipes/composable/useRecipes.ts';
 import type {Recipe} from '@/features/recipes/types/recipe.ts';
@@ -11,7 +12,7 @@ const isFormOpen = ref<boolean>(false);
 const editingRecipe = ref<Recipe | null>(null);
 const isFiltersOpen = ref<boolean>(false);
 const draftFilters = ref({
-    tag: '',
+    tags: [] as string[],
     max_cook_time_input: '',
     source_type: '' as '' | 'manual' | 'site_import' | 'ai_generated',
 });
@@ -54,10 +55,12 @@ async function removeRecipe(recipe: Recipe) {
 
 function openFilters() {
     draftFilters.value = {
-        tag: recipes.filters.value.tag,
+        tags: [...recipes.filters.value.tags],
         max_cook_time_input: recipes.filters.value.max_cook_time?.toString() ?? '',
         source_type: recipes.filters.value.source_type,
     };
+
+    void recipes.loadTagOptions();
     isFiltersOpen.value = true;
 }
 
@@ -66,7 +69,7 @@ async function applyFilters() {
         ? null
         : Number(draftFilters.value.max_cook_time_input);
 
-    recipes.filters.value.tag = draftFilters.value.tag;
+    recipes.filters.value.tags = [...draftFilters.value.tags];
     recipes.filters.value.max_cook_time = Number.isFinite(maxCook) && maxCook !== null && maxCook > 0
         ? Math.floor(maxCook)
         : null;
@@ -78,7 +81,7 @@ async function applyFilters() {
 async function resetFilters() {
     recipes.resetFilters();
     draftFilters.value = {
-        tag: '',
+        tags: [],
         max_cook_time_input: '',
         source_type: '',
     };
@@ -123,34 +126,43 @@ function onMaxCookInput(value: string) {
                 @update:model-value="recipes.onSearchInput"
             />
 
-            <div v-if="isFiltersOpen" class="mt-3 grid gap-2 rounded-xl border border-emerald-900/12 bg-emerald-50/35 p-3 md:grid-cols-4">
-                <Input
-                    :model-value="draftFilters.tag"
-                    type="text"
-                    placeholder="Filter by tag"
-                    @update:model-value="(value) => draftFilters.tag = value"
-                />
+            <div v-if="isFiltersOpen" class="mt-3 flex flex-wrap items-start gap-2 rounded-xl border border-emerald-900/12 bg-emerald-50/35 p-3">
+                <div class="min-w-[240px] flex-1">
+                    <MultiSelect
+                        :model-value="draftFilters.tags"
+                        :options="recipes.tagOptions.value"
+                        :loading="recipes.tagLoading.value"
+                        placeholder="Filter by tags"
+                        no-results-text="No tags found"
+                        @update:model-value="(value) => draftFilters.tags = value"
+                        @search="recipes.onTagSearchInput"
+                    />
+                </div>
 
-                <Input
-                    :model-value="draftFilters.max_cook_time_input"
-                    type="text"
-                    inputmode="numeric"
-                    min="1"
-                    placeholder="Max cook mins"
-                    @update:model-value="onMaxCookInput"
-                />
+                <div class="w-full sm:w-[170px]">
+                    <Input
+                        :model-value="draftFilters.max_cook_time_input"
+                        type="text"
+                        inputmode="numeric"
+                        min="1"
+                        placeholder="Max cook mins"
+                        @update:model-value="onMaxCookInput"
+                    />
+                </div>
 
-                <select
-                    v-model="draftFilters.source_type"
-                    class="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm"
-                >
-                    <option value="">All sources</option>
-                    <option value="manual">Manual</option>
-                    <option value="site_import">Site import</option>
-                    <option value="ai_generated">AI generated</option>
-                </select>
+                <div class="w-full sm:w-[180px]">
+                    <select
+                        v-model="draftFilters.source_type"
+                        class="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm"
+                    >
+                        <option value="">All sources</option>
+                        <option value="manual">Manual</option>
+                        <option value="site_import">Site import</option>
+                        <option value="ai_generated">AI generated</option>
+                    </select>
+                </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex w-full items-center gap-2 sm:w-auto">
                     <button
                         type="button"
                         class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold"

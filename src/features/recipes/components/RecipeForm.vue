@@ -76,7 +76,7 @@ const emit = defineEmits<{
 
             <div class="md:col-span-2">
                 <Label for="recipe-tags">Tags</Label>
-                <Input id="recipe-tags" v-model="props.form.tagsRaw" placeholder="e.g. quick, vegan, weeknight" />
+                <Input id="recipe-tags" v-model="props.form.tagsRaw" placeholder="e.g. quick, dinner, vegetarian" />
             </div>
 
             <div class="md:col-span-2">

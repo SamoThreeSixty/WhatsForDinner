@@ -2,10 +2,12 @@ import {ref} from "vue";
 import {deleteRecipe, listRecipes} from "@/features/recipes/services/recipe.service.ts";
 import type {Recipe, RecipeListParams, RecipeSourceType} from "@/features/recipes/types/recipe.ts";
 import {getApiErrorMessage} from "@/lib/errors.ts";
+import {listTags} from "@/features/recipes/services/tag.service.ts";
+import {toTagOptions, type TagOption} from "@/features/recipes/types/tag.ts";
 
 interface RecipeFilters {
     q: string;
-    tag: string;
+    tags: string[];
     ingredient_id: number | null;
     ingredient_slug: string;
     max_cook_time: number | null;
@@ -15,7 +17,7 @@ interface RecipeFilters {
 function toListParams(filters: RecipeFilters, limit = 50): RecipeListParams {
     return {
         q: filters.q.trim() || undefined,
-        tag: filters.tag.trim() || undefined,
+        tags: filters.tags.length > 0 ? filters.tags : undefined,
         ingredient_id: filters.ingredient_id ?? undefined,
         ingredient_slug: filters.ingredient_slug.trim() || undefined,
         max_cook_time: filters.max_cook_time ?? undefined,
@@ -28,10 +30,12 @@ export function useRecipes() {
     const loading = ref<boolean>(false);
     const error = ref<string | null>(null);
     const items = ref<Recipe[]>([]);
+    const tagLoading = ref<boolean>(false);
+    const tagOptions = ref<TagOption[]>([]);
 
     const filters = ref<RecipeFilters>({
         q: '',
-        tag: '',
+        tags: [],
         ingredient_id: null,
         ingredient_slug: '',
         max_cook_time: null,
@@ -39,6 +43,7 @@ export function useRecipes() {
     });
 
     const searchTimer = ref<number | null>(null);
+    const tagSearchTimer = ref<number | null>(null);
 
     async function loadRecipes(limit = 50) {
         loading.value = true;
@@ -93,12 +98,39 @@ export function useRecipes() {
         if (searchTimer.value !== null) {
             window.clearTimeout(searchTimer.value);
         }
+
+        if (tagSearchTimer.value !== null) {
+            window.clearTimeout(tagSearchTimer.value);
+        }
+    }
+
+    async function loadTagOptions(search = '') {
+        tagLoading.value = true;
+
+        try {
+            const tags = await listTags(search, 50);
+            tagOptions.value = toTagOptions(tags);
+        } catch {
+            tagOptions.value = [];
+        } finally {
+            tagLoading.value = false;
+        }
+    }
+
+    function onTagSearchInput(value: string) {
+        if (tagSearchTimer.value !== null) {
+            window.clearTimeout(tagSearchTimer.value);
+        }
+
+        tagSearchTimer.value = window.setTimeout(async () => {
+            await loadTagOptions(value);
+        }, 250);
     }
 
     function resetFilters() {
         filters.value = {
             q: '',
-            tag: '',
+            tags: [],
             ingredient_id: null,
             ingredient_slug: '',
             max_cook_time: null,
@@ -110,10 +142,14 @@ export function useRecipes() {
         loading,
         error,
         items,
+        tagLoading,
+        tagOptions,
         filters,
         loadRecipes,
         removeRecipe,
         upsertRecipe,
+        loadTagOptions,
+        onTagSearchInput,
         onSearchInput,
         clearTimer,
         resetFilters,

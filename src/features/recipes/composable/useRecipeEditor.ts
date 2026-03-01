@@ -109,13 +109,6 @@ function parsePositiveInteger(value: string): number | null {
     return parsed;
 }
 
-function parseTags(value: string): string[] {
-    return value
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter((tag) => tag !== '');
-}
-
 function parseAmount(value: string): number | null {
     const trimmed = value.trim();
     if (trimmed === '') {
@@ -276,7 +269,10 @@ export function useRecipeEditor() {
             source_type: form.value.sourceType,
             source_url: form.value.sourceUrl.trim() || null,
             nutrition,
-            tags: parseTags(form.value.tagsRaw),
+            tags: form.value.tagsRaw
+                .split(',')
+                .map((tag) => tag.trim())
+                .filter((tag) => tag !== ''),
             steps,
             ingredients,
         };

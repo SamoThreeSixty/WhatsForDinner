@@ -19,6 +19,8 @@ class RecipeController extends Controller
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:100'],
             'tag' => ['nullable', 'string', 'max:255'],
+            'tags' => ['nullable', 'array', 'max:25'],
+            'tags.*' => ['string', 'max:255'],
             'ingredient_id' => ['nullable', 'integer', 'exists:ingredients,id'],
             'ingredient_slug' => ['nullable', 'string', 'max:255', 'exists:ingredients,slug'],
             'max_cook_time' => ['nullable', 'integer', 'min:1', 'max:1440'],
@@ -40,11 +42,29 @@ class RecipeController extends Controller
             });
         }
 
+        $normalizedTags = [];
+
         if (isset($validated['tag'])) {
-            $tag = trim(mb_strtolower($validated['tag']));
-            $query->whereHas('tags', function ($tagQuery) use ($tag) {
-                $tagQuery->where('slug', Str::slug($tag))
-                    ->orWhere('name', 'like', '%'.$tag.'%');
+            $tag = trim((string) $validated['tag']);
+            if ($tag !== '') {
+                $normalizedTags[] = Str::slug($tag);
+            }
+        }
+
+        if (isset($validated['tags'])) {
+            foreach ((array) $validated['tags'] as $tag) {
+                $normalized = Str::slug(trim((string) $tag));
+                if ($normalized !== '') {
+                    $normalizedTags[] = $normalized;
+                }
+            }
+        }
+
+        $normalizedTags = array_values(array_unique($normalizedTags));
+
+        if ($normalizedTags !== []) {
+            $query->whereHas('tags', function ($tagQuery) use ($normalizedTags) {
+                $tagQuery->whereIn('slug', $normalizedTags);
             });
         }
 

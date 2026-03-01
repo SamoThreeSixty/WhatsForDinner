@@ -5,6 +5,7 @@ function toListParams(params: RecipeListParams) {
     return {
         q: params.q?.trim() || undefined,
         tag: params.tag?.trim() || undefined,
+        tags: params.tags && params.tags.length > 0 ? params.tags : undefined,
         ingredient_id: params.ingredient_id,
         ingredient_slug: params.ingredient_slug?.trim() || undefined,
         max_cook_time: params.max_cook_time,

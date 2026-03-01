@@ -87,6 +87,7 @@ export interface RecipeWritePayload {
 export interface RecipeListParams {
     q?: string;
     tag?: string;
+    tags?: string[];
     ingredient_id?: number;
     ingredient_slug?: string;
     max_cook_time?: number;
