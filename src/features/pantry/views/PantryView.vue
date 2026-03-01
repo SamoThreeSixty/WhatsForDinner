@@ -4,9 +4,12 @@ import PageHeader from '@/components/PageHeader.vue';
 import SearchSelection from '@/components/ui/SearchSelection.vue';
 import PantryItem from "@/features/pantry/components/PantryItem.vue";
 import Input from "@/components/ui/Input.vue";
+import Button from "@/components/ui/Button.vue";
+import ProductCreateModal from "@/features/pantry/components/ProductCreateModal.vue";
 import {useInventoryList} from "@/features/pantry/composable/useInventry.ts";
 import {useIngredient} from "@/features/pantry/composable/useIngredient.ts";
 import {useProduct} from "@/features/pantry/composable/useProduct.ts";
+import type {Product} from "@/features/pantry/types/product.ts";
 
 const inventory = useInventoryList();
 onMounted(() => inventory.getInventoryItems());
@@ -15,12 +18,19 @@ const ingredient = useIngredient();
 onMounted(() => ingredient.loadIngredientOptions());
 
 const product = useProduct();
+const isProductModalOpen = ref<boolean>(false);
 
 watch(ingredient.selectedIngredient, async (ingredientId) => {
     product.selectedProduct.value = '';
     product.query.value = '';
     product.selectedIngredient.value = ingredientId;
+    await product.loadProductOptions();
 });
+
+async function onProductCreated(createdProduct: Product) {
+    await product.loadProductOptions();
+    product.selectedProduct.value = String(createdProduct.id);
+}
 
 onBeforeUnmount(() => {
     ingredient.clearTimer();
@@ -50,20 +60,29 @@ onBeforeUnmount(() => {
                     @search="ingredient.onIngredientSearchInput"
                 />
 
-                <SearchSelection
-                    v-if="ingredient.selectedIngredient.value !== null"
-                    v-model="product.selectedProduct.value"
-                    class="md:col-span-2"
-                    :options="product.productOptions.value"
-                    :loading="product.loading.value"
-                    placeholder="Type product name to search"
-                    no-results-text="No products found"
-                    @search="product.onProductSearchInput"
-                />
+                <div v-if="ingredient.selectedIngredient.value !== null" class="md:col-span-2 flex items-center gap-2">
+                    <SearchSelection
+                        v-model="product.selectedProduct.value"
+                        class="flex-1"
+                        :options="product.productOptions.value"
+                        :loading="product.loading.value"
+                        placeholder="Type product name to search"
+                        no-results-text="No products found"
+                        @search="product.onProductSearchInput"
+                    />
+                    <Button type="button" class="shrink-0" @click="isProductModalOpen = true">Add</Button>
+                </div>
 
             </form>
 
         </section>
+
+        <ProductCreateModal
+            v-if="ingredient.selectedIngredient.value"
+            v-model="isProductModalOpen"
+            :ingredient-id="ingredient.selectedIngredient.value"
+            @created="onProductCreated"
+        />
 
         <section
             class="rounded-2xl border border-emerald-800/10 bg-white/78 p-4 shadow-[0_10px_22px_rgba(8,72,43,0.1)] md:p-5">
