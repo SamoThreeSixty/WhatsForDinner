@@ -12,7 +12,7 @@ const editingRecipe = ref<Recipe | null>(null);
 const isFiltersOpen = ref<boolean>(false);
 const draftFilters = ref({
     tag: '',
-    max_cook_time: null as number | null,
+    max_cook_time_input: '',
     source_type: '' as '' | 'manual' | 'site_import' | 'ai_generated',
 });
 
@@ -55,15 +55,21 @@ async function removeRecipe(recipe: Recipe) {
 function openFilters() {
     draftFilters.value = {
         tag: recipes.filters.value.tag,
-        max_cook_time: recipes.filters.value.max_cook_time,
+        max_cook_time_input: recipes.filters.value.max_cook_time?.toString() ?? '',
         source_type: recipes.filters.value.source_type,
     };
     isFiltersOpen.value = true;
 }
 
 async function applyFilters() {
+    const maxCook = draftFilters.value.max_cook_time_input.trim() === ''
+        ? null
+        : Number(draftFilters.value.max_cook_time_input);
+
     recipes.filters.value.tag = draftFilters.value.tag;
-    recipes.filters.value.max_cook_time = draftFilters.value.max_cook_time;
+    recipes.filters.value.max_cook_time = Number.isFinite(maxCook) && maxCook !== null && maxCook > 0
+        ? Math.floor(maxCook)
+        : null;
     recipes.filters.value.source_type = draftFilters.value.source_type;
     await recipes.loadRecipes();
     isFiltersOpen.value = false;
@@ -73,11 +79,15 @@ async function resetFilters() {
     recipes.resetFilters();
     draftFilters.value = {
         tag: '',
-        max_cook_time: null,
+        max_cook_time_input: '',
         source_type: '',
     };
     await recipes.loadRecipes();
     isFiltersOpen.value = false;
+}
+
+function onMaxCookInput(value: string) {
+    draftFilters.value.max_cook_time_input = value.replace(/[^\d]/g, '');
 }
 </script>
 
@@ -106,30 +116,28 @@ async function resetFilters() {
             </div>
 
             <Input
-                :value="recipes.filters.value.q"
+                :model-value="recipes.filters.value.q"
                 type="text"
                 placeholder="Type to search recipes..."
                 class="mt-3 w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm"
-                @input="(event) => recipes.onSearchInput((event.target as HTMLInputElement).value)"
+                @update:model-value="recipes.onSearchInput"
             />
 
             <div v-if="isFiltersOpen" class="mt-3 grid gap-2 rounded-xl border border-emerald-900/12 bg-emerald-50/35 p-3 md:grid-cols-4">
                 <Input
-                    :value="draftFilters.tag"
+                    :model-value="draftFilters.tag"
                     type="text"
                     placeholder="Filter by tag"
-                    @input="(event) => draftFilters.tag = (event.target as HTMLInputElement).value"
+                    @update:model-value="(value) => draftFilters.tag = value"
                 />
 
                 <Input
-                    :value="draftFilters.max_cook_time ?? ''"
-                    type="number"
+                    :model-value="draftFilters.max_cook_time_input"
+                    type="text"
+                    inputmode="numeric"
                     min="1"
                     placeholder="Max cook mins"
-                    @input="(event) => {
-                        const value = (event.target as HTMLInputElement).value;
-                        draftFilters.max_cook_time = value === '' ? null : Number(value);
-                    }"
+                    @update:model-value="onMaxCookInput"
                 />
 
                 <select
