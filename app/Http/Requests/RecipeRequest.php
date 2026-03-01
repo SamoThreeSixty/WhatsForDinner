@@ -45,7 +45,7 @@ class RecipeRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'string', 'max:4000'],
             'prep_time_minutes' => ['nullable', 'integer', 'min:0', 'max:1440'],
             'cook_time_minutes' => ['nullable', 'integer', 'min:0', 'max:1440'],
             'servings' => ['nullable', 'integer', 'min:1', 'max:100'],
@@ -53,23 +53,23 @@ class RecipeRequest extends FormRequest
             'source_url' => ['nullable', 'url', 'max:2048'],
             'nutrition' => ['nullable', 'array'],
 
-            'steps' => ['required', 'array', 'min:1'],
+            'steps' => ['required', 'array', 'min:1', 'max:100'],
             'steps.*.position' => ['nullable', 'integer', 'min:1'],
-            'steps.*.instruction' => ['required', 'string'],
-            'steps.*.timer_seconds' => ['nullable', 'integer', 'min:1'],
+            'steps.*.instruction' => ['required', 'string', 'min:2', 'max:1000'],
+            'steps.*.timer_seconds' => ['nullable', 'integer', 'min:1', 'max:86400'],
 
-            'ingredients' => ['required', 'array', 'min:1'],
+            'ingredients' => ['required', 'array', 'min:1', 'max:200'],
             'ingredients.*.position' => ['nullable', 'integer', 'min:1'],
             'ingredients.*.ingredient_id' => ['nullable', 'integer', 'exists:ingredients,id'],
             'ingredients.*.ingredient_slug' => ['nullable', 'string', 'max:255', 'exists:ingredients,slug'],
-            'ingredients.*.ingredient_text' => ['nullable', 'string', 'max:255'],
-            'ingredients.*.amount' => ['nullable', 'numeric', 'min:0'],
+            'ingredients.*.ingredient_text' => ['nullable', 'string', 'min:1', 'max:255'],
+            'ingredients.*.amount' => ['nullable', 'numeric', 'min:0', 'max:1000000'],
             'ingredients.*.unit' => ['nullable', 'string', 'max:32'],
-            'ingredients.*.preparation_note' => ['nullable', 'string', 'max:255'],
+            'ingredients.*.preparation_note' => ['nullable', 'string', 'max:512'],
             'ingredients.*.is_optional' => ['nullable', 'boolean'],
 
-            'tags' => ['nullable', 'array'],
-            'tags.*' => ['string', 'max:64'],
+            'tags' => ['nullable', 'array', 'max:25'],
+            'tags.*' => ['string', 'min:1', 'max:64', 'distinct:ignore_case'],
         ];
     }
 

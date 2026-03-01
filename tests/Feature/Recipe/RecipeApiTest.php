@@ -234,6 +234,34 @@ class RecipeApiTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_recipe_index_returns_paginated_results(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        foreach (['A Recipe', 'B Recipe', 'C Recipe', 'D Recipe', 'E Recipe'] as $title) {
+            $recipe = new Recipe();
+            $recipe->household_id = $household->id;
+            $recipe->created_by_user_id = $user->id;
+            $recipe->title = $title;
+            $recipe->source_type = 'manual';
+            $recipe->save();
+        }
+
+        Sanctum::actingAs($user);
+
+        $response = $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->getJson('/api/recipes?per_page=2&page=2');
+
+        $response
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('meta.current_page', 2)
+            ->assertJsonPath('meta.last_page', 3)
+            ->assertJsonPath('meta.per_page', 2)
+            ->assertJsonPath('meta.total', 5);
+    }
+
     public function test_recipe_index_can_filter_by_multiple_tags_array(): void
     {
         [$user, $household] = $this->createApprovedMemberContext();
@@ -311,6 +339,34 @@ class RecipeApiTest extends TestCase
             ->assertJsonPath('data.1.slug', 'vegetarian');
     }
 
+    public function test_recipe_and_tag_search_queries_are_case_insensitive(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        $recipe = new Recipe();
+        $recipe->household_id = $household->id;
+        $recipe->created_by_user_id = $user->id;
+        $recipe->title = 'Spicy Lentil Soup';
+        $recipe->source_type = 'manual';
+        $recipe->save();
+        $recipe->tags()->sync($this->tagIdsFromNames(['Weeknight']));
+
+        Sanctum::actingAs($user);
+
+        $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->getJson('/api/recipes?q=SPICY')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $recipe->id);
+
+        $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->getJson('/api/tags?q=WEEK')
+            ->assertOk()
+            ->assertJsonPath('data.0.slug', 'weeknight');
+    }
+
     public function test_recipe_index_rejects_non_array_tags_filter(): void
     {
         [$user, $household] = $this->createApprovedMemberContext();
@@ -339,6 +395,52 @@ class RecipeApiTest extends TestCase
             ->getJson('/api/recipes?'.$query)
             ->assertStatus(422)
             ->assertJsonValidationErrors(['tags']);
+    }
+
+    public function test_store_rejects_too_many_steps(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        Sanctum::actingAs($user);
+
+        $steps = [];
+        for ($i = 0; $i < 101; $i += 1) {
+            $steps[] = ['instruction' => 'Step '.($i + 1)];
+        }
+
+        $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->postJson('/api/recipes', [
+                'title' => 'Too many steps',
+                'steps' => $steps,
+                'ingredients' => [
+                    ['ingredient_text' => 'salt'],
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['steps']);
+    }
+
+    public function test_store_rejects_duplicate_tags_case_insensitive(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        Sanctum::actingAs($user);
+
+        $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->postJson('/api/recipes', [
+                'title' => 'Duplicate tags',
+                'steps' => [
+                    ['instruction' => 'Mix'],
+                ],
+                'ingredients' => [
+                    ['ingredient_text' => 'salt'],
+                ],
+                'tags' => ['Quick', 'quick'],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['tags.1']);
     }
 
     /**
