@@ -2,14 +2,13 @@
 import {onBeforeUnmount, onMounted, ref} from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import Input from '@/components/ui/Input.vue';
-import RecipeForm from '@/features/recipes/components/RecipeForm.vue';
+import RecipeEditorModal from '@/features/recipes/components/RecipeEditorModal.vue';
 import {useRecipes} from '@/features/recipes/composable/useRecipes.ts';
-import {useRecipeEditor} from '@/features/recipes/composable/useRecipeEditor.ts';
 import type {Recipe} from '@/features/recipes/types/recipe.ts';
 
 const recipes = useRecipes();
-const editor = useRecipeEditor();
 const isFormOpen = ref<boolean>(false);
+const editingRecipe = ref<Recipe | null>(null);
 
 onMounted(async () => {
     await recipes.loadRecipes();
@@ -20,28 +19,22 @@ onBeforeUnmount(() => {
 });
 
 function openCreate() {
-    editor.resetForm();
+    editingRecipe.value = null;
     isFormOpen.value = true;
 }
 
 function openEdit(recipe: Recipe) {
-    editor.loadRecipe(recipe);
+    editingRecipe.value = recipe;
     isFormOpen.value = true;
 }
 
-async function submitForm() {
-    const saved = await editor.submit();
-    if (!saved) {
-        return;
-    }
-
+async function onRecipeSaved() {
     await recipes.loadRecipes();
-    isFormOpen.value = false;
 }
 
 function closeForm() {
     isFormOpen.value = false;
-    editor.resetForm();
+    editingRecipe.value = null;
 }
 
 async function removeRecipe(recipe: Recipe) {
@@ -171,26 +164,11 @@ async function removeRecipe(recipe: Recipe) {
             </ul>
         </section>
 
-        <section
-            v-if="isFormOpen"
-            class="rounded-2xl border border-emerald-900/12 bg-white/84 p-4 shadow-[0_10px_22px_rgba(8,72,43,0.1)] md:p-5"
-        >
-            <h2 class="mb-3 text-sm font-semibold text-emerald-900">
-                {{ editor.currentRecipeId.value ? 'Edit Recipe' : 'Create Recipe' }}
-            </h2>
-
-            <RecipeForm
-                :form="editor.form.value"
-                :loading="editor.loading.value"
-                :error="editor.error.value"
-                :can-submit="editor.canSubmit.value"
-                @submit="submitForm"
-                @cancel="closeForm"
-                @add-step="editor.addStep"
-                @remove-step="editor.removeStep"
-                @add-ingredient="editor.addIngredient"
-                @remove-ingredient="editor.removeIngredient"
-            />
-        </section>
+        <RecipeEditorModal
+            :model-value="isFormOpen"
+            :recipe="editingRecipe"
+            @update:model-value="(value) => { if (!value) closeForm(); }"
+            @saved="onRecipeSaved"
+        />
     </section>
 </template>
