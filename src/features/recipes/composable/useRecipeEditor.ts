@@ -10,7 +10,17 @@ import type {
     RecipeWritePayload
 } from "@/features/recipes/types/recipe.ts";
 
-interface RecipeEditorForm {
+export interface RecipeEditorIngredientForm {
+    ingredient_id?: number | null;
+    ingredient_slug?: string | null;
+    ingredient_text?: string | null;
+    amount: string;
+    unit: string;
+    preparation_note: string;
+    is_optional: boolean;
+}
+
+export interface RecipeEditorForm {
     title: string;
     description: string;
     prepTimeMinutes: string;
@@ -21,7 +31,7 @@ interface RecipeEditorForm {
     nutritionRaw: string;
     tagsRaw: string;
     steps: RecipeStepInput[];
-    ingredients: RecipeIngredientInput[];
+    ingredients: RecipeEditorIngredientForm[];
 }
 
 function defaultForm(): RecipeEditorForm {
@@ -36,7 +46,7 @@ function defaultForm(): RecipeEditorForm {
         nutritionRaw: '{}',
         tagsRaw: '',
         steps: [{instruction: ''}],
-        ingredients: [{ingredient_text: '', amount: null, unit: '', is_optional: false}],
+        ingredients: [{ingredient_text: '', amount: '', unit: '', preparation_note: '', is_optional: false}],
     };
 }
 
@@ -58,6 +68,20 @@ function toIngredientInput(ingredient: RecipeIngredient): RecipeIngredientInput 
         unit: ingredient.unit ?? null,
         preparation_note: ingredient.preparation_note ?? null,
         is_optional: ingredient.is_optional,
+    };
+}
+
+function toEditorIngredientForm(ingredient: RecipeIngredient): RecipeEditorIngredientForm {
+    const mapped = toIngredientInput(ingredient);
+
+    return {
+        ingredient_id: mapped.ingredient_id ?? null,
+        ingredient_slug: mapped.ingredient_slug ?? null,
+        ingredient_text: mapped.ingredient_text ?? null,
+        amount: mapped.amount !== null && mapped.amount !== undefined ? String(mapped.amount) : '',
+        unit: mapped.unit ?? '',
+        preparation_note: mapped.preparation_note ?? '',
+        is_optional: Boolean(mapped.is_optional),
     };
 }
 
@@ -91,13 +115,27 @@ function parseTags(value: string): string[] {
         .filter((tag) => tag !== '');
 }
 
-function normalizeIngredients(ingredients: RecipeIngredientInput[]): RecipeIngredientInput[] {
+function parseAmount(value: string): number | null {
+    const trimmed = value.trim();
+    if (trimmed === '') {
+        return null;
+    }
+
+    const parsed = Number(trimmed);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+        return null;
+    }
+
+    return parsed;
+}
+
+function normalizeIngredients(ingredients: RecipeEditorIngredientForm[]): RecipeIngredientInput[] {
     return ingredients
         .map((ingredient) => ({
             ingredient_id: ingredient.ingredient_id ?? null,
             ingredient_slug: ingredient.ingredient_slug?.trim() || null,
             ingredient_text: ingredient.ingredient_text?.trim() || null,
-            amount: ingredient.amount ?? null,
+            amount: parseAmount(ingredient.amount),
             unit: ingredient.unit?.trim() || null,
             preparation_note: ingredient.preparation_note?.trim() || null,
             is_optional: Boolean(ingredient.is_optional),
@@ -149,7 +187,7 @@ export function useRecipeEditor() {
             nutritionRaw: JSON.stringify(recipe.nutrition ?? {}, null, 2),
             tagsRaw: (recipe.tags ?? []).map((tag) => tag.name).join(', '),
             steps: (recipe.steps ?? []).map(toStepInput),
-            ingredients: (recipe.ingredients ?? []).map(toIngredientInput),
+            ingredients: (recipe.ingredients ?? []).map(toEditorIngredientForm),
         };
 
         if (form.value.steps.length === 0) {
@@ -157,7 +195,7 @@ export function useRecipeEditor() {
         }
 
         if (form.value.ingredients.length === 0) {
-            form.value.ingredients.push({ingredient_text: '', amount: null, unit: '', is_optional: false});
+            form.value.ingredients.push({ingredient_text: '', amount: '', unit: '', preparation_note: '', is_optional: false});
         }
 
         error.value = null;
@@ -177,12 +215,12 @@ export function useRecipeEditor() {
     }
 
     function addIngredient() {
-        form.value.ingredients.push({ingredient_text: '', amount: null, unit: '', is_optional: false});
+        form.value.ingredients.push({ingredient_text: '', amount: '', unit: '', preparation_note: '', is_optional: false});
     }
 
     function removeIngredient(index: number) {
         if (form.value.ingredients.length <= 1) {
-            form.value.ingredients[0] = {ingredient_text: '', amount: null, unit: '', is_optional: false};
+            form.value.ingredients[0] = {ingredient_text: '', amount: '', unit: '', preparation_note: '', is_optional: false};
             return;
         }
 

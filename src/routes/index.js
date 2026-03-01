@@ -100,11 +100,11 @@ const routes = [
                 name: 'app.household_manage',
                 component: () => import('../features/households/views/ManagementView.vue'),
             },
-            // {
-            //     path: 'recipes',
-            //     name: 'app.recipes',
-            //     component: () => import('../features/dashboard/views/RecipesView.vue'),
-            // },
+            {
+                path: 'recipes',
+                name: 'app.recipes',
+                component: () => import('../features/recipes/views/RecipesView.vue'),
+            },
             // {
             //     path: 'shopping',
             //     name: 'app.shopping',

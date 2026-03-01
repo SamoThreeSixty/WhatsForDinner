@@ -22,6 +22,7 @@ const layoutFeedback = computed(() => feedbackStore.forScope(layoutFeedbackScope
 const navItems = [
     {name: 'app.dashboard', label: 'Dashboard', shortLabel: 'Home'},
     {name: 'app.pantry', label: 'Pantry', shortLabel: 'Pantry'},
+    {name: 'app.recipes', label: 'Recipes', shortLabel: 'Recipes'},
     {name: 'app.household_manage', label: 'Household', shortLabel: 'Household'},
 ];
 
@@ -130,7 +131,7 @@ watch(
             @click="closeUserMenu"
         />
 
-        <nav class="sticky top-[4.8rem] z-20 mb-4 hidden grid-cols-3 gap-2 rounded-2xl border border-emerald-900/10 bg-white/76 p-2 shadow-[0_8px_20px_rgba(8,72,43,0.1)] backdrop-blur md:grid lg:max-w-[560px]">
+        <nav class="sticky top-[4.8rem] z-20 mb-4 hidden grid-cols-4 gap-2 rounded-2xl border border-emerald-900/10 bg-white/76 p-2 shadow-[0_8px_20px_rgba(8,72,43,0.1)] backdrop-blur md:grid lg:max-w-[760px]">
             <router-link
                 v-for="item in navItems"
                 :key="item.name"
@@ -149,7 +150,7 @@ watch(
             <AuthFeedback :feedback="layoutFeedback" />
         </section>
 
-        <nav class="fixed inset-x-3 bottom-3 z-40 grid grid-cols-3 gap-1.5 rounded-2xl border border-emerald-900/15 bg-white/92 p-1.5 shadow-[0_16px_28px_rgba(8,72,43,0.2)] backdrop-blur md:hidden">
+        <nav class="fixed inset-x-3 bottom-3 z-40 grid grid-cols-4 gap-1.5 rounded-2xl border border-emerald-900/15 bg-white/92 p-1.5 shadow-[0_16px_28px_rgba(8,72,43,0.2)] backdrop-blur md:hidden">
             <router-link
                 v-for="item in navItems"
                 :key="item.name"
