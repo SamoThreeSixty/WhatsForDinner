@@ -91,9 +91,9 @@ const routes = [
 
             // region TODO: Other features
             {
-                path: 'ingredients',
-                name: 'app.ingredients',
-                component: () => import('../features/dashboard/views/IngredientsView.vue'),
+                path: 'pantry',
+                name: 'app.pantry',
+                component: () => import('../features/pantry/views/PantryView.vue'),
             },
             {
                 path: 'household/manage',

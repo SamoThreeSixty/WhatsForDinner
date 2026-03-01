@@ -22,7 +22,7 @@ const layoutFeedback = computed(() => feedbackStore.forScope(layoutFeedbackScope
 
 const navItems = [
     {name: 'app.dashboard', label: 'Dashboard'},
-    {name: 'app.ingredients', label: 'Ingredients'},
+    {name: 'app.pantry', label: 'Pantry'},
     {name: 'app.household_manage', label: 'Household'},
 ];
 

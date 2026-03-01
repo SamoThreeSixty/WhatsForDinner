@@ -10,9 +10,9 @@ const firstName = computed(() => authStore.username?.split(' ')[0] || 'there');
 
 const quickActions = [
     {
-        title: 'Household larder',
-        description: 'Track dairy, meats, grains, produce, and seasonings in one place.',
-        routeName: 'app.ingredients',
+        title: 'Pantry',
+        description: 'Check what you have around the house.',
+        routeName: 'app.pantry',
         icon: 'Larder'
     },
     // {
