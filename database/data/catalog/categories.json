@@ -1,0 +1,34 @@
+[
+    {
+        "slug": "baking",
+        "name": "baking"
+    },
+    {
+        "slug": "dairy",
+        "name": "dairy"
+    },
+    {
+        "slug": "frozen",
+        "name": "frozen"
+    },
+    {
+        "slug": "grains",
+        "name": "grains"
+    },
+    {
+        "slug": "pantry",
+        "name": "pantry"
+    },
+    {
+        "slug": "produce",
+        "name": "produce"
+    },
+    {
+        "slug": "protein",
+        "name": "protein"
+    },
+    {
+        "slug": "spices",
+        "name": "spices"
+    }
+]
