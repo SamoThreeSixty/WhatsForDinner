@@ -68,6 +68,11 @@ const emit = defineEmits<{
                 </select>
             </div>
 
+            <div>
+                <Label for="recipe-source-url">Source URL</Label>
+                <Input id="recipe-source-url" v-model="props.form.sourceUrl" placeholder="https://example.com/recipe" />
+            </div>
+
             <div class="md:col-span-2">
                 <Label for="recipe-tags">Tags</Label>
                 <Input id="recipe-tags" v-model="props.form.tagsRaw" placeholder="e.g. quick, vegan, weeknight" />

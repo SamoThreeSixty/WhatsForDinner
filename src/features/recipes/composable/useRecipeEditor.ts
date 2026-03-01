@@ -1,5 +1,6 @@
 import {computed, ref} from "vue";
 import {createRecipe, updateRecipe} from "@/features/recipes/services/recipe.service.ts";
+import {getApiErrorMessage} from "@/lib/errors.ts";
 import type {
     Recipe,
     RecipeIngredient,
@@ -297,7 +298,7 @@ export function useRecipeEditor() {
 
             return await createRecipe(payload);
         } catch (e) {
-            error.value = e instanceof Error ? e.message : 'Failed to save recipe.';
+            error.value = getApiErrorMessage(e, e instanceof Error ? e.message : 'Failed to save recipe.');
             return null;
         } finally {
             loading.value = false;
