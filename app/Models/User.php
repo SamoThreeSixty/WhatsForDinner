@@ -61,4 +61,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(HouseholdAccess::class, 'invited_by');
     }
+
+    public function recipes(): HasMany
+    {
+        return $this->hasMany(Recipe::class, 'created_by_user_id');
+    }
 }

@@ -52,6 +52,11 @@ class Ingredient extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function recipeIngredients(): HasMany
+    {
+        return $this->hasMany(RecipeIngredient::class);
+    }
+
     protected function slugFallbackSeed(): string
     {
         return 'ingredient';
