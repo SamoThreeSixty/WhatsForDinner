@@ -145,13 +145,27 @@ async function removeRecipe(recipe: Recipe) {
                             <p class="text-xs text-emerald-800/75">
                                 {{ item.cook_time_minutes ?? 0 }} min cook · {{ item.servings ?? '-' }} servings
                             </p>
+                            <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                <span class="rounded-full border border-emerald-900/18 bg-emerald-50 px-2 py-0.5 text-[0.66rem] font-semibold uppercase tracking-[0.04em] text-emerald-900">
+                                    {{ item.source_type.replace('_', ' ') }}
+                                </span>
+                                <span
+                                    v-for="tag in item.tags ?? []"
+                                    :key="tag.id"
+                                    class="rounded-full border border-emerald-900/12 bg-white px-2 py-0.5 text-[0.66rem] font-medium text-emerald-800"
+                                >
+                                    {{ tag.name }}
+                                </span>
+                            </div>
                         </div>
-                        <button type="button" class="rounded-lg border border-emerald-900/20 px-2.5 py-1 text-xs font-semibold" @click="openEdit(item)">
-                            Edit
-                        </button>
-                        <button type="button" class="rounded-lg border border-rose-700/25 px-2.5 py-1 text-xs font-semibold text-rose-700" @click="removeRecipe(item)">
-                            Delete
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" class="rounded-lg border border-emerald-900/20 px-2.5 py-1 text-xs font-semibold" @click="openEdit(item)">
+                                Edit
+                            </button>
+                            <button type="button" class="rounded-lg border border-rose-700/25 px-2.5 py-1 text-xs font-semibold text-rose-700" @click="removeRecipe(item)">
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </li>
             </ul>
