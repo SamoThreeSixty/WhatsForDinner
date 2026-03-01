@@ -21,7 +21,7 @@ class TagController extends Controller
         $query = Tag::query()->orderBy('name');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->whereRaw('LOWER(name) like ?', ['%'.$search.'%']);
         }
 
         return TagResource::collection($query->limit($limit)->get());

@@ -7,6 +7,7 @@ use App\Http\Resources\RecipeResource;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Tag;
+use App\Services\RecipeQueryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -14,6 +15,10 @@ use Illuminate\Validation\Rule;
 
 class RecipeController extends Controller
 {
+    public function __construct(private readonly RecipeQueryService $recipeQueryService)
+    {
+    }
+
     public function index(Request $request)
     {
         $validated = $request->validate([
@@ -25,70 +30,18 @@ class RecipeController extends Controller
             'ingredient_slug' => ['nullable', 'string', 'max:255', 'exists:ingredients,slug'],
             'max_cook_time' => ['nullable', 'integer', 'min:1', 'max:1440'],
             'source_type' => ['nullable', Rule::in(['manual', 'site_import', 'ai_generated'])],
-            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
         ]);
 
-        $search = isset($validated['q']) ? trim(mb_strtolower($validated['q'])) : '';
-        $limit = $validated['limit'] ?? 50;
+        $perPage = $validated['per_page'] ?? 20;
+        $page = $validated['page'] ?? null;
 
-        $query = Recipe::query()
-            ->with(['tags', 'steps', 'ingredients.ingredient'])
-            ->orderBy('title');
+        $query = $this->recipeQueryService->buildFilteredQuery($validated);
 
-        if ($search !== '') {
-            $query->where(function ($nested) use ($search) {
-                $nested->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%');
-            });
-        }
-
-        $normalizedTags = [];
-
-        if (isset($validated['tag'])) {
-            $tag = trim((string) $validated['tag']);
-            if ($tag !== '') {
-                $normalizedTags[] = Str::slug($tag);
-            }
-        }
-
-        if (isset($validated['tags'])) {
-            foreach ((array) $validated['tags'] as $tag) {
-                $normalized = Str::slug(trim((string) $tag));
-                if ($normalized !== '') {
-                    $normalizedTags[] = $normalized;
-                }
-            }
-        }
-
-        $normalizedTags = array_values(array_unique($normalizedTags));
-
-        if ($normalizedTags !== []) {
-            $query->whereHas('tags', function ($tagQuery) use ($normalizedTags) {
-                $tagQuery->whereIn('slug', $normalizedTags);
-            });
-        }
-
-        if (isset($validated['ingredient_id'])) {
-            $query->whereHas('ingredients', function ($ingredientQuery) use ($validated) {
-                $ingredientQuery->where('ingredient_id', $validated['ingredient_id']);
-            });
-        }
-
-        if (isset($validated['ingredient_slug'])) {
-            $query->whereHas('ingredients.ingredient', function ($ingredientQuery) use ($validated) {
-                $ingredientQuery->where('slug', $validated['ingredient_slug']);
-            });
-        }
-
-        if (isset($validated['max_cook_time'])) {
-            $query->where('cook_time_minutes', '<=', $validated['max_cook_time']);
-        }
-
-        if (isset($validated['source_type'])) {
-            $query->where('source_type', $validated['source_type']);
-        }
-
-        return RecipeResource::collection($query->limit($limit)->get());
+        return RecipeResource::collection(
+            $query->paginate($perPage, ['*'], 'page', $page)
+        );
     }
 
     public function store(RecipeRequest $request)
