@@ -14,15 +14,28 @@ export interface Product {
 export interface AddProduct {
     company: string;
     name: string;
-    // unit_type: string;
+    unitType: UnitType | null;
+    unitAmount: string;
+    unitValue: string;
 }
 
 export interface CreateProductPayload {
     ingredient_id: number;
+    company?: string | null;
     name: string;
-    // unit_type: UnitType;
-    // unit_options: string[];
-    // unit_default: string;
+    unit_type: UnitType;
+    unit_options: string[];
+    unit_default: string;
+}
+
+export interface UnitTypeOption {
+    value: UnitType;
+    label: string;
+}
+
+export interface ProductMetadataResponse {
+    unit_types: UnitTypeOption[];
+    units_by_type: Record<string, string[]>;
 }
 
 export type ProductOption = SearchOption;

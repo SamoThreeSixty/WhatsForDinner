@@ -1,5 +1,5 @@
 import {api, type ResourceCollectionResponse, type ResourceItemResponse} from "@/lib/api.ts";
-import type {CreateProductPayload, Product} from "@/features/pantry/types/product.ts";
+import type {CreateProductPayload, Product, ProductMetadataResponse} from "@/features/pantry/types/product.ts";
 
 export async function listProducts(ingredientId: number, search?: string, limit?: number): Promise<Product[]> {
     const response = await api.get('/products', {
@@ -21,4 +21,9 @@ export async function createProduct(payload: CreateProductPayload): Promise<Prod
     const body = response.data as Product | ResourceItemResponse<Product>;
 
     return 'data' in body ? body.data : body;
+}
+
+export async function getProductMetadata(): Promise<ProductMetadataResponse> {
+    const response = await api.get('/products/metadata');
+    return response.data as ProductMetadataResponse;
 }

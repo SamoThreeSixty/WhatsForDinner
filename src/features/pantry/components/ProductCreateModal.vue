@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
+import {watch} from "vue";
 import DialogModal from "@/components/ui/DialogModal.vue";
 import Input from "@/components/ui/Input.vue";
 import Select from "@/components/ui/Select.vue";
 import Label from "@/components/ui/Label.vue";
 import Button from "@/components/ui/Button.vue";
-import type {CreateProductPayload, Product} from "@/features/pantry/types/product.ts";
-import type {UnitType} from "@/features/pantry/types/unit.ts";
-import {createProduct} from "@/features/pantry/services/product.service.ts";
+import type {Product} from "@/features/pantry/types/product.ts";
 import {useProductAdd} from "@/features/pantry/composable/useProductAdd.ts";
 
 const props = defineProps<{
     modelValue: boolean;
-    ingredientId: number;
+    ingredientId: number | string;
 }>();
 
 const emit = defineEmits<{
@@ -23,11 +21,12 @@ const emit = defineEmits<{
 const emitFn = (key: string, item: any) => emit(key, item);
 const productAdd  = useProductAdd(emitFn);
 
-onMounted(() => {
-    productAdd.ingredientId.value = props.ingredientId
+watch(() => props.modelValue, async (isOpen) => {
+    if (!isOpen) {
+        return;
+    }
 
-
-    console.log(props.ingredientId)
+    await productAdd.onOpen(props.ingredientId);
 })
 
 </script>
@@ -53,29 +52,48 @@ onMounted(() => {
                 />
             </div>
 
-<!--            <div>-->
-<!--                <Label for="product-unit-type">Unit Type</Label>-->
-<!--                <Select id="product-unit-type" v-model="unitType">-->
-<!--                    <option v-for="type in unitTypeOptions" :key="type" :value="type">{{ type }}</option>-->
-<!--                </Select>-->
-<!--            </div>-->
+            <div>
+                <Label for="product-unit-type">Unit Type</Label>
+                <Select
+                    id="product-unit-type"
+                    :model-value="productAdd.form.value.unitType"
+                    :disabled="productAdd.metadataLoading.value"
+                    @update:model-value="productAdd.onUnitTypeChange"
+                >
+                    <option value="" disabled>Select unit type</option>
+                    <option v-for="type in productAdd.unitTypeOptions.value" :key="type.value" :value="type.value">
+                        {{ type.label }}
+                    </option>
+                </Select>
+            </div>
 
-<!--            <div>-->
-<!--                <Label for="product-unit-values">Unit Values</Label>-->
-<!--                <Input-->
-<!--                    id="product-unit-values"-->
-<!--                    v-model="productAdd.form.value.unit_type"-->
-<!--                    placeholder="Comma separated e.g. each, pack, g"-->
-<!--                />-->
-<!--            </div>-->
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <Label for="product-unit-amount">Default Amount</Label>
+                    <Input
+                        id="product-unit-amount"
+                        v-model="productAdd.form.value.unitAmount"
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="e.g. 250"
+                    />
+                </div>
 
-<!--            <div>-->
-<!--                <Label for="product-unit-default">Default Unit</Label>-->
-<!--                <Select id="product-unit-default" v-model="unitDefault" :disabled="parsedUnitValues.length === 0">-->
-<!--                    <option value="" disabled>Select default unit</option>-->
-<!--                    <option v-for="value in parsedUnitValues" :key="value" :value="value">{{ value }}</option>-->
-<!--                </Select>-->
-<!--            </div>-->
+                <div>
+                    <Label for="product-unit-value">Default Unit</Label>
+                    <Select
+                        id="product-unit-value"
+                        v-model="productAdd.form.value.unitValue"
+                        :disabled="productAdd.unitValueOptions.value.length === 0"
+                    >
+                        <option value="" disabled>Select unit</option>
+                        <option v-for="unit in productAdd.unitValueOptions.value" :key="unit" :value="unit">
+                            {{ unit }}
+                        </option>
+                    </Select>
+                </div>
+            </div>
 
             <p v-if="productAdd.error.value" class="text-sm text-rose-700">{{ productAdd.error.value }}</p>
         </form>
