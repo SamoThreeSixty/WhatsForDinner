@@ -23,8 +23,8 @@ function parseDefaultUnit(value?: string | null): {quantity: string; unit: strin
     }
 
     return {
-        quantity: match[1],
-        unit: match[2],
+        quantity: match[1] ?? '',
+        unit: match[2] ?? '',
     };
 }
 
