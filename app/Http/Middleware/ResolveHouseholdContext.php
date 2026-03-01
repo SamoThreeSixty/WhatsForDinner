@@ -21,7 +21,9 @@ class ResolveHouseholdContext
         }
 
         $headerHouseholdId = $request->header('X-Household-Id');
-        $sessionHouseholdId = $request->session()->get('active_household_id');
+        $sessionHouseholdId = $request->hasSession()
+            ? $request->session()->get('active_household_id')
+            : null;
         $householdId = $headerHouseholdId ?: $sessionHouseholdId;
 
         if (!$householdId) {
@@ -40,7 +42,7 @@ class ResolveHouseholdContext
 
         $context->set($householdId);
 
-        if ($request->session()->get('active_household_id') !== $householdId) {
+        if ($request->hasSession() && $request->session()->get('active_household_id') !== $householdId) {
             $request->session()->put('active_household_id', $householdId);
         }
 
