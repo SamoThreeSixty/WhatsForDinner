@@ -67,6 +67,16 @@ export function useRecipes() {
         }
     }
 
+    function upsertRecipe(recipe: Recipe) {
+        const existingIndex = items.value.findIndex((item) => item.id === recipe.id);
+        if (existingIndex >= 0) {
+            items.value[existingIndex] = recipe;
+            return;
+        }
+
+        items.value.unshift(recipe);
+    }
+
     function onSearchInput(value: string) {
         filters.value.q = value;
 
@@ -103,6 +113,7 @@ export function useRecipes() {
         filters,
         loadRecipes,
         removeRecipe,
+        upsertRecipe,
         onSearchInput,
         clearTimer,
         resetFilters,

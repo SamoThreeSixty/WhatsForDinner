@@ -62,6 +62,7 @@ watch(
             :loading="editor.loading.value"
             :error="editor.error.value"
             :can-submit="editor.canSubmit.value"
+            :submit-label="editor.currentRecipeId.value ? 'Update Recipe' : 'Save Recipe'"
             @submit="submit"
             @cancel="closeModal"
             @add-step="editor.addStep"

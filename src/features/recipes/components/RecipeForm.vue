@@ -9,6 +9,7 @@ const props = defineProps<{
     loading: boolean;
     error: string | null;
     canSubmit: boolean;
+    submitLabel?: string;
 }>();
 
 const emit = defineEmits<{
@@ -131,7 +132,7 @@ const emit = defineEmits<{
         <div class="flex items-center justify-end gap-2">
             <button type="button" class="rounded-xl border border-emerald-900/20 px-3 py-2 text-sm font-semibold" @click="emit('cancel')">Cancel</button>
             <Button type="submit" :disabled="!props.canSubmit">
-                {{ props.loading ? 'Saving...' : 'Save Recipe' }}
+                {{ props.loading ? 'Saving...' : (props.submitLabel || 'Save Recipe') }}
             </Button>
         </div>
     </form>

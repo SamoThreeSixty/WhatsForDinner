@@ -28,8 +28,8 @@ function openEdit(recipe: Recipe) {
     isFormOpen.value = true;
 }
 
-async function onRecipeSaved() {
-    await recipes.loadRecipes();
+function onRecipeSaved(recipe: Recipe) {
+    recipes.upsertRecipe(recipe);
 }
 
 function closeForm() {
