@@ -1,5 +1,5 @@
 import {api, type ResourceCollectionResponse, type ResourceItemResponse} from "@/lib/api.ts";
-import type {Recipe, RecipeListParams, RecipeWritePayload} from "@/features/recipes/types/recipe.ts";
+import type {Recipe, RecipeListParams, RecipeListResult, RecipeWritePayload} from "@/features/recipes/types/recipe.ts";
 
 function toListParams(params: RecipeListParams) {
     return {
@@ -10,7 +10,8 @@ function toListParams(params: RecipeListParams) {
         ingredient_slug: params.ingredient_slug?.trim() || undefined,
         max_cook_time: params.max_cook_time,
         source_type: params.source_type,
-        limit: params.limit,
+        page: params.page,
+        per_page: params.per_page,
     };
 }
 
@@ -18,13 +19,33 @@ function fromItemResponse(body: Recipe | ResourceItemResponse<Recipe>): Recipe {
     return 'data' in body ? body.data : body;
 }
 
-export async function listRecipes(params: RecipeListParams = {}): Promise<Recipe[]> {
+export async function listRecipes(params: RecipeListParams = {}): Promise<RecipeListResult> {
     const response = await api.get('/recipes', {
         params: toListParams(params),
     });
 
     const payload = response.data as Recipe[] | ResourceCollectionResponse<Recipe>;
-    return Array.isArray(payload) ? payload : payload.data ?? [];
+    if (Array.isArray(payload)) {
+        return {
+            data: payload,
+            pagination: {
+                current_page: 1,
+                last_page: 1,
+                per_page: payload.length,
+                total: payload.length,
+            },
+        };
+    }
+
+    return {
+        data: payload.data ?? [],
+        pagination: {
+            current_page: payload.meta?.current_page ?? 1,
+            last_page: payload.meta?.last_page ?? 1,
+            per_page: payload.meta?.per_page ?? (payload.data?.length ?? 0),
+            total: payload.meta?.total ?? (payload.data?.length ?? 0),
+        },
+    };
 }
 
 export async function getRecipe(recipeId: number): Promise<Recipe> {

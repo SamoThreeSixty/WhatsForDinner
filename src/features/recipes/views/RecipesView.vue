@@ -3,6 +3,7 @@ import {onBeforeUnmount, onMounted, ref} from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import Input from '@/components/ui/Input.vue';
 import MultiSelect from '@/components/ui/MultiSelect.vue';
+import PaginationControls from '@/components/ui/PaginationControls.vue';
 import RecipeEditorModal from '@/features/recipes/components/RecipeEditorModal.vue';
 import {useRecipes} from '@/features/recipes/composable/useRecipes.ts';
 import type {Recipe} from '@/features/recipes/types/recipe.ts';
@@ -74,7 +75,7 @@ async function applyFilters() {
         ? Math.floor(maxCook)
         : null;
     recipes.filters.value.source_type = draftFilters.value.source_type;
-    await recipes.loadRecipes();
+    await recipes.loadRecipes(1);
     isFiltersOpen.value = false;
 }
 
@@ -85,7 +86,7 @@ async function resetFilters() {
         max_cook_time_input: '',
         source_type: '',
     };
-    await recipes.loadRecipes();
+    await recipes.loadRecipes(1);
     isFiltersOpen.value = false;
 }
 
@@ -112,7 +113,7 @@ function onMaxCookInput(value: string) {
                     <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" @click="isFiltersOpen ? (isFiltersOpen = false) : openFilters()">
                         {{ isFiltersOpen ? 'Hide filters' : 'Filters' }}
                     </button>
-                    <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" :disabled="recipes.loading.value" @click="recipes.loadRecipes()">
+                    <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" :disabled="recipes.loading.value" @click="recipes.loadRecipes(recipes.pagination.value.current_page)">
                         {{ recipes.loading.value ? 'Refreshing...' : 'Refresh' }}
                     </button>
                 </div>
@@ -219,6 +220,14 @@ function onMaxCookInput(value: string) {
                     </div>
                 </li>
             </ul>
+
+            <PaginationControls
+                :current-page="recipes.pagination.value.current_page"
+                :last-page="recipes.pagination.value.last_page"
+                :total="recipes.pagination.value.total"
+                :loading="recipes.loading.value"
+                @change="recipes.goToPage"
+            />
         </section>
 
         <RecipeEditorModal

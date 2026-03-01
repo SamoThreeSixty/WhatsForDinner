@@ -92,5 +92,18 @@ export interface RecipeListParams {
     ingredient_slug?: string;
     max_cook_time?: number;
     source_type?: RecipeSourceType;
-    limit?: number;
+    page?: number;
+    per_page?: number;
+}
+
+export interface RecipeListPagination {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
+export interface RecipeListResult {
+    data: Recipe[];
+    pagination: RecipeListPagination;
 }

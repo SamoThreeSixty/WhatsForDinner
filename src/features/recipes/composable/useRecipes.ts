@@ -1,6 +1,6 @@
 import {ref} from "vue";
 import {deleteRecipe, listRecipes} from "@/features/recipes/services/recipe.service.ts";
-import type {Recipe, RecipeListParams, RecipeSourceType} from "@/features/recipes/types/recipe.ts";
+import type {Recipe, RecipeListPagination, RecipeListParams, RecipeSourceType} from "@/features/recipes/types/recipe.ts";
 import {getApiErrorMessage} from "@/lib/errors.ts";
 import {listTags} from "@/features/recipes/services/tag.service.ts";
 import {toTagOptions, type TagOption} from "@/features/recipes/types/tag.ts";
@@ -22,7 +22,7 @@ function toListParams(filters: RecipeFilters, limit = 50): RecipeListParams {
         ingredient_slug: filters.ingredient_slug.trim() || undefined,
         max_cook_time: filters.max_cook_time ?? undefined,
         source_type: filters.source_type || undefined,
-        limit,
+        per_page: limit,
     };
 }
 
@@ -30,6 +30,12 @@ export function useRecipes() {
     const loading = ref<boolean>(false);
     const error = ref<string | null>(null);
     const items = ref<Recipe[]>([]);
+    const pagination = ref<RecipeListPagination>({
+        current_page: 1,
+        last_page: 1,
+        per_page: 20,
+        total: 0,
+    });
     const tagLoading = ref<boolean>(false);
     const tagOptions = ref<TagOption[]>([]);
 
@@ -45,12 +51,18 @@ export function useRecipes() {
     const searchTimer = ref<number | null>(null);
     const tagSearchTimer = ref<number | null>(null);
 
-    async function loadRecipes(limit = 50) {
+    async function loadRecipes(page = 1, perPage = pagination.value.per_page) {
         loading.value = true;
         error.value = null;
 
         try {
-            items.value = await listRecipes(toListParams(filters.value, limit));
+            const result = await listRecipes({
+                ...toListParams(filters.value, perPage),
+                page,
+            });
+
+            items.value = result.data;
+            pagination.value = result.pagination;
         } catch {
             error.value = "Failed to load recipes.";
         } finally {
@@ -65,6 +77,12 @@ export function useRecipes() {
         try {
             await deleteRecipe(recipeId);
             items.value = items.value.filter((item) => item.id !== recipeId);
+            pagination.value.total = Math.max(0, pagination.value.total - 1);
+
+            if (items.value.length === 0 && pagination.value.current_page > 1) {
+                await loadRecipes(pagination.value.current_page - 1);
+                return;
+            }
         } catch (e) {
             error.value = getApiErrorMessage(e, "Failed to delete recipe.");
         } finally {
@@ -90,7 +108,7 @@ export function useRecipes() {
         }
 
         searchTimer.value = window.setTimeout(async () => {
-            await loadRecipes();
+            await loadRecipes(1);
         }, 250);
     }
 
@@ -138,14 +156,24 @@ export function useRecipes() {
         };
     }
 
+    async function goToPage(page: number) {
+        if (page < 1 || page > pagination.value.last_page || page === pagination.value.current_page) {
+            return;
+        }
+
+        await loadRecipes(page);
+    }
+
     return {
         loading,
         error,
         items,
+        pagination,
         tagLoading,
         tagOptions,
         filters,
         loadRecipes,
+        goToPage,
         removeRecipe,
         upsertRecipe,
         loadTagOptions,
