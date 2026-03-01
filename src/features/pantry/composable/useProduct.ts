@@ -13,7 +13,8 @@ export function useProduct() {
     const productOptions = ref<ProductOption[]>([]);
 
     async function loadProductOptions() {
-        if (!selectedIngredient.value != null) {
+        const parsedIngredientId = Number(selectedIngredient.value);
+        if (!Number.isInteger(parsedIngredientId) || parsedIngredientId <= 0) {
             productOptions.value = [];
             return;
         }
@@ -22,7 +23,7 @@ export function useProduct() {
         error.value = null;
 
         try {
-            const items = await listProducts(Number(selectedIngredient.value), query.value, 20);
+            const items = await listProducts(parsedIngredientId, query.value, 20);
             productOptions.value = toProductOptions(items);
         } catch {
             error.value = "Error loading products";

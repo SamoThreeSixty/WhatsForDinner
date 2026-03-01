@@ -11,6 +11,10 @@ export interface ResourceCollectionResponse<T> {
     data: T[];
 }
 
+export interface ResourceItemResponse<T> {
+    data: T;
+}
+
 export const api = axios.create({
     baseURL: `${apiBaseUrl}/api`,
     headers: {
