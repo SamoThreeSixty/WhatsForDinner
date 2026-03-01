@@ -6,8 +6,10 @@ use App\Models\Household;
 use App\Models\HouseholdMembership;
 use App\Models\Ingredient;
 use App\Models\Recipe;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -230,6 +232,101 @@ class RecipeApiTest extends TestCase
             ->withHeader('X-Household-Id', (string) $householdA->id)
             ->getJson('/api/recipes/'.$recipeB->id)
             ->assertNotFound();
+    }
+
+    public function test_recipe_index_can_filter_by_multiple_tags_array(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        $quickOnly = new Recipe();
+        $quickOnly->household_id = $household->id;
+        $quickOnly->created_by_user_id = $user->id;
+        $quickOnly->title = 'Quick Soup';
+        $quickOnly->source_type = 'manual';
+        $quickOnly->save();
+        $quickOnly->tags()->sync($this->tagIdsFromNames(['Quick']));
+
+        $dinnerOnly = new Recipe();
+        $dinnerOnly->household_id = $household->id;
+        $dinnerOnly->created_by_user_id = $user->id;
+        $dinnerOnly->title = 'Dinner Pie';
+        $dinnerOnly->source_type = 'manual';
+        $dinnerOnly->save();
+        $dinnerOnly->tags()->sync($this->tagIdsFromNames(['Dinner']));
+
+        $other = new Recipe();
+        $other->household_id = $household->id;
+        $other->created_by_user_id = $user->id;
+        $other->title = 'Breakfast Oats';
+        $other->source_type = 'manual';
+        $other->save();
+        $other->tags()->sync($this->tagIdsFromNames(['Breakfast']));
+
+        Sanctum::actingAs($user);
+
+        $response = $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->getJson('/api/recipes?tags[]=quick&tags[]=dinner');
+
+        $response
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+
+        $ids = collect($response->json('data'))->pluck('id')->all();
+
+        $this->assertContains($quickOnly->id, $ids);
+        $this->assertContains($dinnerOnly->id, $ids);
+        $this->assertNotContains($other->id, $ids);
+    }
+
+    public function test_tags_index_returns_search_results_sorted_by_name(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        $recipeA = new Recipe();
+        $recipeA->household_id = $household->id;
+        $recipeA->created_by_user_id = $user->id;
+        $recipeA->title = 'A Recipe';
+        $recipeA->source_type = 'manual';
+        $recipeA->save();
+        $recipeA->tags()->sync($this->tagIdsFromNames(['Vegan']));
+
+        $recipeB = new Recipe();
+        $recipeB->household_id = $household->id;
+        $recipeB->created_by_user_id = $user->id;
+        $recipeB->title = 'B Recipe';
+        $recipeB->source_type = 'manual';
+        $recipeB->save();
+        $recipeB->tags()->sync($this->tagIdsFromNames(['Weeknight', 'Vegetarian']));
+
+        Sanctum::actingAs($user);
+
+        $response = $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->getJson('/api/tags?q=veg');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.0.slug', 'vegan')
+            ->assertJsonPath('data.1.slug', 'vegetarian');
+    }
+
+    /**
+     * @param array<int, string> $names
+     * @return array<int, int>
+     */
+    private function tagIdsFromNames(array $names): array
+    {
+        return collect($names)
+            ->map(function (string $name): int {
+                $slug = Str::slug($name);
+
+                return (int) Tag::query()->firstOrCreate(
+                    ['slug' => $slug],
+                    ['name' => $name]
+                )->id;
+            })
+            ->all();
     }
 
     /**
