@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RecipeRequest;
 use App\Http\Resources\RecipeResource;
 use App\Models\Ingredient;
 use App\Models\Recipe;
@@ -10,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class RecipeController extends Controller
 {
@@ -71,9 +71,9 @@ class RecipeController extends Controller
         return RecipeResource::collection($query->limit($limit)->get());
     }
 
-    public function store(Request $request)
+    public function store(RecipeRequest $request)
     {
-        $validated = $this->validatePayload($request);
+        $validated = $request->validated();
         $recipe = DB::transaction(function () use ($validated, $request) {
             $recipePayload = $this->recipePayload($validated);
             $recipePayload['created_by_user_id'] = $request->user()->id;
@@ -94,9 +94,9 @@ class RecipeController extends Controller
         return new RecipeResource($recipe->load(['tags', 'steps', 'ingredients.ingredient']));
     }
 
-    public function update(Request $request, Recipe $recipe)
+    public function update(RecipeRequest $request, Recipe $recipe)
     {
-        $validated = $this->validatePayload($request);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($recipe, $validated) {
             $recipe->update($this->recipePayload($validated));
@@ -114,56 +114,6 @@ class RecipeController extends Controller
         $recipe->delete();
 
         return response()->json();
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function validatePayload(Request $request): array
-    {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'prep_time_minutes' => ['nullable', 'integer', 'min:0', 'max:1440'],
-            'cook_time_minutes' => ['nullable', 'integer', 'min:0', 'max:1440'],
-            'servings' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'source_type' => ['nullable', Rule::in(['manual', 'site_import', 'ai_generated'])],
-            'source_url' => ['nullable', 'url', 'max:2048'],
-            'nutrition' => ['nullable', 'array'],
-
-            'steps' => ['required', 'array', 'min:1'],
-            'steps.*.position' => ['nullable', 'integer', 'min:1'],
-            'steps.*.instruction' => ['required', 'string'],
-            'steps.*.timer_seconds' => ['nullable', 'integer', 'min:1'],
-
-            'ingredients' => ['required', 'array', 'min:1'],
-            'ingredients.*.position' => ['nullable', 'integer', 'min:1'],
-            'ingredients.*.ingredient_id' => ['nullable', 'integer', 'exists:ingredients,id'],
-            'ingredients.*.ingredient_slug' => ['nullable', 'string', 'max:255', 'exists:ingredients,slug'],
-            'ingredients.*.ingredient_text' => ['nullable', 'string', 'max:255'],
-            'ingredients.*.amount' => ['nullable', 'numeric', 'min:0'],
-            'ingredients.*.unit' => ['nullable', 'string', 'max:32'],
-            'ingredients.*.preparation_note' => ['nullable', 'string', 'max:255'],
-            'ingredients.*.is_optional' => ['nullable', 'boolean'],
-
-            'tags' => ['nullable', 'array'],
-            'tags.*' => ['string', 'max:64'],
-        ]);
-
-        foreach ($validated['ingredients'] as $index => $ingredientRow) {
-            $hasIngredient =
-                !empty($ingredientRow['ingredient_id']) ||
-                !empty($ingredientRow['ingredient_slug']) ||
-                !empty(trim((string) ($ingredientRow['ingredient_text'] ?? '')));
-
-            if (! $hasIngredient) {
-                throw ValidationException::withMessages([
-                    'ingredients.'.$index => ['Each ingredient row must include ingredient_id, ingredient_slug, or ingredient_text.'],
-                ]);
-            }
-        }
-
-        return $validated;
     }
 
     /**
