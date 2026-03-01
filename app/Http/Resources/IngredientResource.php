@@ -11,10 +11,15 @@ class IngredientResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $categorySlug = $this->catalogCategory?->slug ?? $this->category;
+
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'name' => $this->name,
-            'category' => $this->category,
+            'category' => $categorySlug,
+            'category_slug' => $categorySlug,
+            'category_id' => $this->category_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
