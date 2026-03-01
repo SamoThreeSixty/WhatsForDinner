@@ -9,6 +9,12 @@ import type {Recipe} from '@/features/recipes/types/recipe.ts';
 const recipes = useRecipes();
 const isFormOpen = ref<boolean>(false);
 const editingRecipe = ref<Recipe | null>(null);
+const isFiltersOpen = ref<boolean>(false);
+const draftFilters = ref({
+    tag: '',
+    max_cook_time: null as number | null,
+    source_type: '' as '' | 'manual' | 'site_import' | 'ai_generated',
+});
 
 onMounted(async () => {
     await recipes.loadRecipes();
@@ -45,6 +51,34 @@ async function removeRecipe(recipe: Recipe) {
 
     await recipes.removeRecipe(recipe.id);
 }
+
+function openFilters() {
+    draftFilters.value = {
+        tag: recipes.filters.value.tag,
+        max_cook_time: recipes.filters.value.max_cook_time,
+        source_type: recipes.filters.value.source_type,
+    };
+    isFiltersOpen.value = true;
+}
+
+async function applyFilters() {
+    recipes.filters.value.tag = draftFilters.value.tag;
+    recipes.filters.value.max_cook_time = draftFilters.value.max_cook_time;
+    recipes.filters.value.source_type = draftFilters.value.source_type;
+    await recipes.loadRecipes();
+    isFiltersOpen.value = false;
+}
+
+async function resetFilters() {
+    recipes.resetFilters();
+    draftFilters.value = {
+        tag: '',
+        max_cook_time: null,
+        source_type: '',
+    };
+    await recipes.loadRecipes();
+    isFiltersOpen.value = false;
+}
 </script>
 
 <template>
@@ -62,6 +96,9 @@ async function removeRecipe(recipe: Recipe) {
                     <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" @click="openCreate">
                         Add
                     </button>
+                    <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" @click="isFiltersOpen ? (isFiltersOpen = false) : openFilters()">
+                        {{ isFiltersOpen ? 'Hide filters' : 'Filters' }}
+                    </button>
                     <button type="button" class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold" :disabled="recipes.loading.value" @click="recipes.loadRecipes()">
                         {{ recipes.loading.value ? 'Refreshing...' : 'Refresh' }}
                     </button>
@@ -76,27 +113,27 @@ async function removeRecipe(recipe: Recipe) {
                 @input="(event) => recipes.onSearchInput((event.target as HTMLInputElement).value)"
             />
 
-            <div class="mt-3 grid gap-2 md:grid-cols-4">
+            <div v-if="isFiltersOpen" class="mt-3 grid gap-2 rounded-xl border border-emerald-900/12 bg-emerald-50/35 p-3 md:grid-cols-4">
                 <Input
-                    :value="recipes.filters.value.tag"
+                    :value="draftFilters.tag"
                     type="text"
                     placeholder="Filter by tag"
-                    @input="(event) => recipes.filters.value.tag = (event.target as HTMLInputElement).value"
+                    @input="(event) => draftFilters.tag = (event.target as HTMLInputElement).value"
                 />
 
                 <Input
-                    :value="recipes.filters.value.max_cook_time ?? ''"
+                    :value="draftFilters.max_cook_time ?? ''"
                     type="number"
                     min="1"
                     placeholder="Max cook mins"
                     @input="(event) => {
                         const value = (event.target as HTMLInputElement).value;
-                        recipes.filters.value.max_cook_time = value === '' ? null : Number(value);
+                        draftFilters.max_cook_time = value === '' ? null : Number(value);
                     }"
                 />
 
                 <select
-                    v-model="recipes.filters.value.source_type"
+                    v-model="draftFilters.source_type"
                     class="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm"
                 >
                     <option value="">All sources</option>
@@ -110,14 +147,14 @@ async function removeRecipe(recipe: Recipe) {
                         type="button"
                         class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold"
                         :disabled="recipes.loading.value"
-                        @click="recipes.loadRecipes()"
+                        @click="applyFilters"
                     >
                         Apply
                     </button>
                     <button
                         type="button"
                         class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold"
-                        @click="() => { recipes.resetFilters(); recipes.loadRecipes(); }"
+                        @click="resetFilters"
                     >
                         Reset
                     </button>
