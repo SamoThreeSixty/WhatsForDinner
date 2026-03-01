@@ -311,6 +311,36 @@ class RecipeApiTest extends TestCase
             ->assertJsonPath('data.1.slug', 'vegetarian');
     }
 
+    public function test_recipe_index_rejects_non_array_tags_filter(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        Sanctum::actingAs($user);
+
+        $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->getJson('/api/recipes?tags=quick')
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['tags']);
+    }
+
+    public function test_recipe_index_rejects_too_many_tags_filter_values(): void
+    {
+        [$user, $household] = $this->createApprovedMemberContext();
+
+        Sanctum::actingAs($user);
+
+        $query = http_build_query([
+            'tags' => array_fill(0, 26, 'quick'),
+        ]);
+
+        $this
+            ->withHeader('X-Household-Id', (string) $household->id)
+            ->getJson('/api/recipes?'.$query)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['tags']);
+    }
+
     /**
      * @param array<int, string> $names
      * @return array<int, int>
