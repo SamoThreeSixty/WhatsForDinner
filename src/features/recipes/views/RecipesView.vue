@@ -43,6 +43,15 @@ function closeForm() {
     isFormOpen.value = false;
     editor.resetForm();
 }
+
+async function removeRecipe(recipe: Recipe) {
+    const confirmed = window.confirm(`Delete "${recipe.title}"?`);
+    if (!confirmed) {
+        return;
+    }
+
+    await recipes.removeRecipe(recipe.id);
+}
 </script>
 
 <template>
@@ -74,6 +83,56 @@ function closeForm() {
                 @input="(event) => recipes.onSearchInput((event.target as HTMLInputElement).value)"
             />
 
+            <div class="mt-3 grid gap-2 md:grid-cols-4">
+                <Input
+                    :value="recipes.filters.value.tag"
+                    type="text"
+                    placeholder="Filter by tag"
+                    @input="(event) => recipes.filters.value.tag = (event.target as HTMLInputElement).value"
+                />
+
+                <Input
+                    :value="recipes.filters.value.max_cook_time ?? ''"
+                    type="number"
+                    min="1"
+                    placeholder="Max cook mins"
+                    @input="(event) => {
+                        const value = (event.target as HTMLInputElement).value;
+                        recipes.filters.value.max_cook_time = value === '' ? null : Number(value);
+                    }"
+                />
+
+                <select
+                    v-model="recipes.filters.value.source_type"
+                    class="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 text-sm"
+                >
+                    <option value="">All sources</option>
+                    <option value="manual">Manual</option>
+                    <option value="site_import">Site import</option>
+                    <option value="ai_generated">AI generated</option>
+                </select>
+
+                <div class="flex items-center gap-2">
+                    <button
+                        type="button"
+                        class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold"
+                        :disabled="recipes.loading.value"
+                        @click="recipes.loadRecipes()"
+                    >
+                        Apply
+                    </button>
+                    <button
+                        type="button"
+                        class="rounded-lg border border-emerald-900/20 px-3 py-1.5 text-xs font-semibold"
+                        @click="() => { recipes.resetFilters(); recipes.loadRecipes(); }"
+                    >
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <p v-if="recipes.error.value" class="mt-2 text-sm text-rose-700">{{ recipes.error.value }}</p>
+
             <p v-if="!recipes.loading.value && recipes.items.value.length === 0" class="mt-3 text-sm text-(--green-muted)">
                 No recipes yet.
             </p>
@@ -89,6 +148,9 @@ function closeForm() {
                         </div>
                         <button type="button" class="rounded-lg border border-emerald-900/20 px-2.5 py-1 text-xs font-semibold" @click="openEdit(item)">
                             Edit
+                        </button>
+                        <button type="button" class="rounded-lg border border-rose-700/25 px-2.5 py-1 text-xs font-semibold text-rose-700" @click="removeRecipe(item)">
+                            Delete
                         </button>
                     </div>
                 </li>

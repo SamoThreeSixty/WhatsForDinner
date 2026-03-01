@@ -1,6 +1,7 @@
 import {ref} from "vue";
-import {listRecipes} from "@/features/recipes/services/recipe.service.ts";
+import {deleteRecipe, listRecipes} from "@/features/recipes/services/recipe.service.ts";
 import type {Recipe, RecipeListParams, RecipeSourceType} from "@/features/recipes/types/recipe.ts";
+import {getApiErrorMessage} from "@/lib/errors.ts";
 
 interface RecipeFilters {
     q: string;
@@ -52,6 +53,20 @@ export function useRecipes() {
         }
     }
 
+    async function removeRecipe(recipeId: number) {
+        loading.value = true;
+        error.value = null;
+
+        try {
+            await deleteRecipe(recipeId);
+            items.value = items.value.filter((item) => item.id !== recipeId);
+        } catch (e) {
+            error.value = getApiErrorMessage(e, "Failed to delete recipe.");
+        } finally {
+            loading.value = false;
+        }
+    }
+
     function onSearchInput(value: string) {
         filters.value.q = value;
 
@@ -87,6 +102,7 @@ export function useRecipes() {
         items,
         filters,
         loadRecipes,
+        removeRecipe,
         onSearchInput,
         clearTimer,
         resetFilters,
