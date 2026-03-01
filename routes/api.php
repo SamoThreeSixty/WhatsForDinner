@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseholdMembershipController;
+use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SpoonacularAPI;
@@ -39,4 +40,6 @@ Route::middleware(['auth:sanctum', 'verified', 'household.context'])->group(func
     Route::middleware('household.required')->apiResource('ingredients', IngredientController::class);
     Route::middleware('household.required')->get('/products/metadata', [ProductController::class, 'metadata']);
     Route::middleware('household.required')->apiResource('products', ProductController::class);
+    Route::middleware('household.required')->get('/inventory-items/metadata', [InventoryItemController::class, 'metadata']);
+    Route::middleware('household.required')->apiResource('inventory-items', InventoryItemController::class);
 });
