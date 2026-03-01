@@ -2,33 +2,23 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUniqueSlug;
 
     protected $fillable = [
         'slug',
         'name',
     ];
 
-    protected static function booted(): void
+    protected function slugSeed(): string
     {
-        static::creating(function (self $category): void {
-            if (! $category->slug) {
-                $category->slug = static::nextUniqueSlug(Str::slug((string) $category->name));
-            }
-        });
-
-        static::updating(function (self $category): void {
-            if ($category->isDirty('slug')) {
-                $category->slug = (string) $category->getOriginal('slug');
-            }
-        });
+        return (string) $this->name;
     }
 
     public function ingredients(): HasMany
@@ -36,17 +26,8 @@ class Category extends Model
         return $this->hasMany(Ingredient::class);
     }
 
-    private static function nextUniqueSlug(string $base): string
+    protected function slugFallbackSeed(): string
     {
-        $seed = $base !== '' ? $base : 'category';
-        $slug = $seed;
-        $counter = 2;
-
-        while (static::query()->where('slug', $slug)->exists()) {
-            $slug = $seed.'-'.$counter;
-            $counter++;
-        }
-
-        return $slug;
+        return 'category';
     }
 }

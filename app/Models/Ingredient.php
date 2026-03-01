@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Support\Str;
 
 class Ingredient extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasUniqueSlug;
 
     protected $fillable = [
         'slug',
@@ -24,19 +25,16 @@ class Ingredient extends Model
     {
         static::creating(function (self $ingredient): void {
             $ingredient->name = Str::lower(trim((string) $ingredient->name));
-
-            if (! $ingredient->slug) {
-                $ingredient->slug = static::nextUniqueSlug(Str::slug($ingredient->name));
-            }
         });
 
         static::updating(function (self $ingredient): void {
             $ingredient->name = Str::lower(trim((string) $ingredient->name));
-
-            if ($ingredient->isDirty('slug')) {
-                $ingredient->slug = (string) $ingredient->getOriginal('slug');
-            }
         });
+    }
+
+    protected function slugSeed(): string
+    {
+        return (string) $this->name;
     }
 
     public function household(): BelongsTo
@@ -54,17 +52,8 @@ class Ingredient extends Model
         return $this->hasMany(Product::class);
     }
 
-    private static function nextUniqueSlug(string $base): string
+    protected function slugFallbackSeed(): string
     {
-        $seed = $base !== '' ? $base : 'ingredient';
-        $slug = $seed;
-        $counter = 2;
-
-        while (static::query()->withTrashed()->where('slug', $slug)->exists()) {
-            $slug = $seed.'-'.$counter;
-            $counter++;
-        }
-
-        return $slug;
+        return 'ingredient';
     }
 }

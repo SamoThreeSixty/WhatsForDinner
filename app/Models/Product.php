@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
+use App\Models\Concerns\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Support\Str;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasUniqueSlug;
 
     protected $fillable = [
         'slug',
@@ -28,54 +29,33 @@ class Product extends Model
         'unit_options' => 'array',
     ];
 
-    protected static function booted(): void
-    {
-        static::creating(function (self $product): void {
-            if (! $product->slug) {
-                $product->slug = static::nextUniqueSlug($product);
-            }
-        });
-
-        static::updating(function (self $product): void {
-            if ($product->isDirty('slug')) {
-                $product->slug = (string) $product->getOriginal('slug');
-            }
-        });
-    }
-
     public function ingredient(): BelongsTo
     {
         return $this->belongsTo(Ingredient::class);
     }
 
-    private static function nextUniqueSlug(self $product): string
+    protected function slugSeed(): string
     {
-        $ingredientSlug = null;
+        if (! $this->ingredient_id) {
+            throw new \LogicException('Product slug seed requires ingredient_id.');
+        }
 
-        if ($product->ingredient_id) {
-            $ingredient = Ingredient::query()->withTrashed()->find($product->ingredient_id);
-            $ingredientSlug = $ingredient?->slug;
+        $ingredient = Ingredient::query()->withTrashed()->find($this->ingredient_id);
+        if (! $ingredient?->slug) {
+            throw new \LogicException('Product slug seed requires a valid ingredient with a slug.');
         }
 
         $parts = array_filter([
-            $ingredientSlug,
-            trim((string) ($product->company ?? '')),
-            trim((string) $product->name),
+            $ingredient->slug,
+            trim((string) ($this->company ?? '')),
+            trim((string) $this->name),
         ]);
 
-        $seed = Str::slug(Str::lower(implode('-', $parts)));
-        if ($seed === '') {
-            $seed = 'product';
-        }
+        return Str::lower(implode('-', $parts));
+    }
 
-        $slug = $seed;
-        $counter = 2;
-
-        while (static::query()->withTrashed()->where('slug', $slug)->exists()) {
-            $slug = $seed.'-'.$counter;
-            $counter++;
-        }
-
-        return $slug;
+    protected function slugFallbackSeed(): string
+    {
+        return 'product';
     }
 }
