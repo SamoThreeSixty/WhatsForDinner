@@ -50,7 +50,7 @@ class RecipeRequest extends FormRequest
             'cook_time_minutes' => ['nullable', 'integer', 'min:0', 'max:1440'],
             'servings' => ['nullable', 'integer', 'min:1', 'max:100'],
             'source_type' => ['nullable', Rule::in(['manual', 'site_import', 'ai_generated'])],
-            'source_url' => ['nullable', 'url', 'max:2048'],
+            'source_url' => ['nullable', 'url', 'max:255'],
             'nutrition' => ['nullable', 'array'],
 
             'steps' => ['required', 'array', 'min:1', 'max:100'],
@@ -65,7 +65,7 @@ class RecipeRequest extends FormRequest
             'ingredients.*.ingredient_text' => ['nullable', 'string', 'min:1', 'max:255'],
             'ingredients.*.amount' => ['nullable', 'numeric', 'min:0', 'max:1000000'],
             'ingredients.*.unit' => ['nullable', 'string', 'max:32'],
-            'ingredients.*.preparation_note' => ['nullable', 'string', 'max:512'],
+            'ingredients.*.preparation_note' => ['nullable', 'string', 'max:255'],
             'ingredients.*.is_optional' => ['nullable', 'boolean'],
 
             'tags' => ['nullable', 'array', 'max:25'],
