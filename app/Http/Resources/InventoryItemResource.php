@@ -22,7 +22,9 @@ class InventoryItemResource extends JsonResource
             'location' => $this->location,
             'product' => $this->whenLoaded('product', fn () => [
                 'id' => $this->product?->id,
+                'slug' => $this->product?->slug,
                 'ingredient_id' => $this->product?->ingredient_id,
+                'ingredient_slug' => $this->product?->ingredient?->slug,
                 'company' => $this->product?->company,
                 'name' => $this->product?->name,
                 'unit_type' => $this->product?->unit_type?->value ?? $this->product?->unit_type,

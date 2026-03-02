@@ -78,6 +78,14 @@ Delivery checklist for agents:
 - `database/migrations/2026_02_24_001617_create_ingredients_table.php`
 - `database/migrations/2026_02_25_223000_add_household_id_to_ingredients_table.php`
 
+## Workflow rules
+- For every step: do not commit. Always end with "Suggested commit message: <message>" and wait for my explicit approval before running git commit or git push.
+- Commit format: "<short sentence>", no Conventional Commit scopes, and wait for explicit approval before commit.
+- After code change, run
+  - ```docker exec -it whatsfordinner-app php artisan cache:clear```
+  - ```docker exec -it whatsfordinner-app vendor/bin/phpunit```
+- Do not merge — human review required
+
 ## Open Questions
 1. What is the exact ingredient grouping schema (levels, required fields, and constraints)?
 2. Any additional key files (migrations/controllers/services) to align with beyond the ones listed?

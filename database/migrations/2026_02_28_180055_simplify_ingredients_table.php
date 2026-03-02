@@ -25,7 +25,10 @@ return new class extends Migration
         });
 
         DB::table('ingredients')->update(['name' => DB::raw('LOWER(name)')]);
-        DB::statement('ALTER TABLE ingredients ADD CONSTRAINT ingredients_name_lowercase_chk CHECK (name = LOWER(name))');
+
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE ingredients ADD CONSTRAINT ingredients_name_lowercase_chk CHECK (name = LOWER(name))');
+        }
 
         Schema::table('ingredients', function (Blueprint $table) {
             $table->unique('name', 'ingredients_name_unique');
@@ -41,10 +44,12 @@ return new class extends Migration
             $table->dropUnique('ingredients_name_unique');
         });
 
-        try {
-            DB::statement('ALTER TABLE ingredients DROP CONSTRAINT ingredients_name_lowercase_chk');
-        } catch (\Throwable) {
-            DB::statement('ALTER TABLE ingredients DROP CHECK ingredients_name_lowercase_chk');
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            try {
+                DB::statement('ALTER TABLE ingredients DROP CONSTRAINT ingredients_name_lowercase_chk');
+            } catch (\Throwable) {
+                DB::statement('ALTER TABLE ingredients DROP CHECK ingredients_name_lowercase_chk');
+            }
         }
 
         Schema::table('ingredients', function (Blueprint $table) {

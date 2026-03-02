@@ -1,0 +1,287 @@
+[
+    {
+        "slug": "salt",
+        "name": "Salt",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "black-pepper",
+        "name": "Black Pepper",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "olive-oil",
+        "name": "Olive Oil",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "vegetable-oil",
+        "name": "Vegetable Oil",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "butter",
+        "name": "Butter",
+        "category_slug": "dairy"
+    },
+    {
+        "slug": "milk",
+        "name": "Milk",
+        "category_slug": "dairy"
+    },
+    {
+        "slug": "greek-yogurt",
+        "name": "Greek Yogurt",
+        "category_slug": "dairy"
+    },
+    {
+        "slug": "cheddar-cheese",
+        "name": "Cheddar Cheese",
+        "category_slug": "dairy"
+    },
+    {
+        "slug": "parmesan",
+        "name": "Parmesan",
+        "category_slug": "dairy"
+    },
+    {
+        "slug": "eggs",
+        "name": "Eggs",
+        "category_slug": "dairy"
+    },
+    {
+        "slug": "chicken-breast",
+        "name": "Chicken Breast",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "ground-beef",
+        "name": "Ground Beef",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "salmon",
+        "name": "Salmon",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "bacon",
+        "name": "Bacon",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "tofu",
+        "name": "Tofu",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "chickpeas",
+        "name": "Chickpeas",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "black-beans",
+        "name": "Black Beans",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "lentils",
+        "name": "Lentils",
+        "category_slug": "protein"
+    },
+    {
+        "slug": "white-rice",
+        "name": "White Rice",
+        "category_slug": "grains"
+    },
+    {
+        "slug": "brown-rice",
+        "name": "Brown Rice",
+        "category_slug": "grains"
+    },
+    {
+        "slug": "pasta",
+        "name": "Pasta",
+        "category_slug": "grains"
+    },
+    {
+        "slug": "spaghetti",
+        "name": "Spaghetti",
+        "category_slug": "grains"
+    },
+    {
+        "slug": "flour",
+        "name": "Flour",
+        "category_slug": "baking"
+    },
+    {
+        "slug": "bread-crumbs",
+        "name": "Bread Crumbs",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "onion",
+        "name": "Onion",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "garlic",
+        "name": "Garlic",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "carrot",
+        "name": "Carrot",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "celery",
+        "name": "Celery",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "broccoli",
+        "name": "Broccoli",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "spinach",
+        "name": "Spinach",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "bell-pepper",
+        "name": "Bell Pepper",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "potato",
+        "name": "Potato",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "sweet-potato",
+        "name": "Sweet Potato",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "tomato",
+        "name": "Tomato",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "cucumber",
+        "name": "Cucumber",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "lemon",
+        "name": "Lemon",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "lime",
+        "name": "Lime",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "apple",
+        "name": "Apple",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "banana",
+        "name": "Banana",
+        "category_slug": "produce"
+    },
+    {
+        "slug": "frozen-peas",
+        "name": "Frozen Peas",
+        "category_slug": "frozen"
+    },
+    {
+        "slug": "frozen-corn",
+        "name": "Frozen Corn",
+        "category_slug": "frozen"
+    },
+    {
+        "slug": "tomato-paste",
+        "name": "Tomato Paste",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "crushed-tomatoes",
+        "name": "Crushed Tomatoes",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "chicken-stock",
+        "name": "Chicken Stock",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "beef-stock",
+        "name": "Beef Stock",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "soy-sauce",
+        "name": "Soy Sauce",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "rice-vinegar",
+        "name": "Rice Vinegar",
+        "category_slug": "pantry"
+    },
+    {
+        "slug": "cumin",
+        "name": "Cumin",
+        "category_slug": "spices"
+    },
+    {
+        "slug": "paprika",
+        "name": "Paprika",
+        "category_slug": "spices"
+    },
+    {
+        "slug": "chili-powder",
+        "name": "Chili Powder",
+        "category_slug": "spices"
+    },
+    {
+        "slug": "oregano",
+        "name": "Oregano",
+        "category_slug": "spices"
+    },
+    {
+        "slug": "cinnamon",
+        "name": "Cinnamon",
+        "category_slug": "spices"
+    },
+    {
+        "slug": "baking-powder",
+        "name": "Baking Powder",
+        "category_slug": "baking"
+    },
+    {
+        "slug": "baking-soda",
+        "name": "Baking Soda",
+        "category_slug": "baking"
+    },
+    {
+        "slug": "sugar",
+        "name": "Sugar",
+        "category_slug": "baking"
+    },
+    {
+        "slug": "brown-sugar",
+        "name": "Brown Sugar",
+        "category_slug": "baking"
+    },
+    {
+        "slug": "honey",
+        "name": "Honey",
+        "category_slug": "pantry"
+    }
+]

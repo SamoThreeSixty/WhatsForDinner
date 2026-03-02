@@ -19,3 +19,7 @@ If you would like to use this project, you will need to activate your own spoona
 ## Contributing
 
 You are welcome to offer suggestions or improvements to the codebase.
+
+## Documentation
+
+- [Recipes API](docs/recipes-api.md)

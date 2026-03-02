@@ -36,4 +36,9 @@ class Household extends Model
     {
         return $this->hasMany(HouseholdAccess::class);
     }
+
+    public function recipes(): HasMany
+    {
+        return $this->hasMany(Recipe::class);
+    }
 }
