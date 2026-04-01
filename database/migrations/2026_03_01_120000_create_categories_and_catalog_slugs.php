@@ -41,10 +41,18 @@ return new class extends Migration
             $table->dropColumn('slug');
         });
 
-        Schema::table('ingredients', function (Blueprint $table) {
+        $isSqlite = Schema::getConnection()->getDriverName() === 'sqlite';
+
+        Schema::table('ingredients', function (Blueprint $table) use ($isSqlite) {
             $table->dropUnique('ingredients_slug_unique');
             $table->dropIndex(['category_id']);
-            $table->dropConstrainedForeignId('category_id');
+
+            if ($isSqlite) {
+                $table->dropColumn('category_id');
+            } else {
+                $table->dropConstrainedForeignId('category_id');
+            }
+
             $table->dropColumn('slug');
         });
 

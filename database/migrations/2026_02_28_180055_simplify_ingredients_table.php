@@ -13,8 +13,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('ingredients', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('household_id');
+        $isSqlite = Schema::getConnection()->getDriverName() === 'sqlite';
+
+        if ($isSqlite) {
+            Schema::table('ingredients', function (Blueprint $table) {
+                $table->dropIndex('ingredients_household_id_name_index');
+            });
+        }
+
+        Schema::table('ingredients', function (Blueprint $table) use ($isSqlite) {
+            if ($isSqlite) {
+                $table->dropColumn('household_id');
+            } else {
+                $table->dropConstrainedForeignId('household_id');
+            }
+
             $table->dropColumn('location');
             $table->dropColumn('unit_type');
             $table->dropColumn('unit');
