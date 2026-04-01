@@ -113,6 +113,8 @@ onBeforeUnmount(() => {
 }
 
 .ui-dialog__panel {
+    display: flex;
+    flex-direction: column;
     background: #fff;
     border: 1px solid rgba(23, 86, 57, 0.16);
     border-radius: 16px;
@@ -148,6 +150,8 @@ onBeforeUnmount(() => {
 
 .ui-dialog__body {
     padding: 1rem;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .ui-dialog__footer {

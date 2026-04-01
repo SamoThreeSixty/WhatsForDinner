@@ -8,8 +8,10 @@ RUN apt-get update \
         libpng-dev \
         libonig-dev \
         libicu-dev \
+        libsqlite3-dev \
     && docker-php-ext-install \
         pdo_mysql \
+        pdo_sqlite \
         mbstring \
         zip \
         exif \

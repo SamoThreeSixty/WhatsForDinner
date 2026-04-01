@@ -1,0 +1,227 @@
+[
+    {
+        "slug": "diamond-crystal-kosher-salt",
+        "ingredient_slug": "salt",
+        "company": "Diamond Crystal",
+        "name": "Kosher Salt",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "morton-fine-sea-salt",
+        "ingredient_slug": "salt",
+        "company": "Morton",
+        "name": "Fine Sea Salt",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "kirkland-extra-virgin-olive-oil",
+        "ingredient_slug": "olive-oil",
+        "company": "Kirkland Signature",
+        "name": "Extra Virgin Olive Oil",
+        "unit_type": "volume",
+        "unit_options": ["ml", "l"],
+        "unit_default": "ml"
+    },
+    {
+        "slug": "lurpak-slightly-salted-butter",
+        "ingredient_slug": "butter",
+        "company": "Lurpak",
+        "name": "Slightly Salted Butter",
+        "unit_type": "mass",
+        "unit_options": ["g"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "kerrygold-unsalted-butter",
+        "ingredient_slug": "butter",
+        "company": "Kerrygold",
+        "name": "Unsalted Butter",
+        "unit_type": "mass",
+        "unit_options": ["g"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "horizon-organic-whole-milk",
+        "ingredient_slug": "milk",
+        "company": "Horizon Organic",
+        "name": "Whole Milk",
+        "unit_type": "volume",
+        "unit_options": ["ml", "l"],
+        "unit_default": "ml"
+    },
+    {
+        "slug": "chobani-plain-greek-yogurt",
+        "ingredient_slug": "greek-yogurt",
+        "company": "Chobani",
+        "name": "Plain Greek Yogurt",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "cabot-sharp-cheddar-block",
+        "ingredient_slug": "cheddar-cheese",
+        "company": "Cabot",
+        "name": "Sharp Cheddar Block",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "vital-farms-large-eggs",
+        "ingredient_slug": "eggs",
+        "company": "Vital Farms",
+        "name": "Large Eggs",
+        "unit_type": "count",
+        "unit_options": ["each", "pack"],
+        "unit_default": "each"
+    },
+    {
+        "slug": "tyson-boneless-skinless-chicken-breast",
+        "ingredient_slug": "chicken-breast",
+        "company": "Tyson",
+        "name": "Boneless Skinless Chicken Breast",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "natures-promise-lean-ground-beef",
+        "ingredient_slug": "ground-beef",
+        "company": "Nature's Promise",
+        "name": "Lean Ground Beef",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "atlantic-salmon-portions",
+        "ingredient_slug": "salmon",
+        "company": null,
+        "name": "Atlantic Salmon Portions",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "nasoya-organic-extra-firm-tofu",
+        "ingredient_slug": "tofu",
+        "company": "Nasoya",
+        "name": "Organic Extra Firm Tofu",
+        "unit_type": "mass",
+        "unit_options": ["g"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "goya-chickpeas",
+        "ingredient_slug": "chickpeas",
+        "company": "Goya",
+        "name": "Chickpeas",
+        "unit_type": "count",
+        "unit_options": ["each", "pack"],
+        "unit_default": "each"
+    },
+    {
+        "slug": "rice-select-long-grain-white-rice",
+        "ingredient_slug": "white-rice",
+        "company": "RiceSelect",
+        "name": "Long Grain White Rice",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "de-cecco-spaghetti-no-12",
+        "ingredient_slug": "spaghetti",
+        "company": "De Cecco",
+        "name": "Spaghetti No. 12",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "king-arthur-all-purpose-flour",
+        "ingredient_slug": "flour",
+        "company": "King Arthur",
+        "name": "All Purpose Flour",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "yellow-onion-3lb-bag",
+        "ingredient_slug": "onion",
+        "company": null,
+        "name": "Yellow Onion 3 lb Bag",
+        "unit_type": "count",
+        "unit_options": ["each", "pack"],
+        "unit_default": "each"
+    },
+    {
+        "slug": "california-garlic-bulb",
+        "ingredient_slug": "garlic",
+        "company": null,
+        "name": "California Garlic Bulb",
+        "unit_type": "count",
+        "unit_options": ["each", "pack"],
+        "unit_default": "each"
+    },
+    {
+        "slug": "earthbound-baby-spinach",
+        "ingredient_slug": "spinach",
+        "company": "Earthbound Farm",
+        "name": "Baby Spinach",
+        "unit_type": "mass",
+        "unit_options": ["g"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "vine-ripened-tomatoes",
+        "ingredient_slug": "tomato",
+        "company": null,
+        "name": "Vine Ripened Tomatoes",
+        "unit_type": "mass",
+        "unit_options": ["g", "kg"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "birds-eye-frozen-peas",
+        "ingredient_slug": "frozen-peas",
+        "company": "Birds Eye",
+        "name": "Frozen Peas",
+        "unit_type": "mass",
+        "unit_options": ["g"],
+        "unit_default": "g"
+    },
+    {
+        "slug": "muir-glen-organic-tomato-paste",
+        "ingredient_slug": "tomato-paste",
+        "company": "Muir Glen",
+        "name": "Organic Tomato Paste",
+        "unit_type": "count",
+        "unit_options": ["each", "pack"],
+        "unit_default": "each"
+    },
+    {
+        "slug": "swanson-chicken-stock",
+        "ingredient_slug": "chicken-stock",
+        "company": "Swanson",
+        "name": "Chicken Stock",
+        "unit_type": "volume",
+        "unit_options": ["ml", "l"],
+        "unit_default": "ml"
+    },
+    {
+        "slug": "kikkoman-soy-sauce",
+        "ingredient_slug": "soy-sauce",
+        "company": "Kikkoman",
+        "name": "Soy Sauce",
+        "unit_type": "volume",
+        "unit_options": ["ml", "l"],
+        "unit_default": "ml"
+    }
+]

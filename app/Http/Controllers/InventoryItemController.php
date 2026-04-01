@@ -33,7 +33,7 @@ class InventoryItemController extends Controller
         $limit = $validated['limit'] ?? 100;
 
         $query = InventoryItem::query()
-            ->with('product')
+            ->with('product.ingredient')
             ->latest('created_at');
 
         if ($search !== '') {
@@ -54,19 +54,19 @@ class InventoryItemController extends Controller
     {
         $inventoryItem = InventoryItem::query()->create($request->validated());
 
-        return new InventoryItemResource($inventoryItem->load('product'));
+        return new InventoryItemResource($inventoryItem->load('product.ingredient'));
     }
 
     public function show(InventoryItem $inventoryItem)
     {
-        return new InventoryItemResource($inventoryItem->load('product'));
+        return new InventoryItemResource($inventoryItem->load('product.ingredient'));
     }
 
     public function update(InventoryItemRequest $request, InventoryItem $inventoryItem)
     {
         $inventoryItem->update($request->validated());
 
-        return new InventoryItemResource($inventoryItem->load('product'));
+        return new InventoryItemResource($inventoryItem->load('product.ingredient'));
     }
 
     public function destroy(InventoryItem $inventoryItem)

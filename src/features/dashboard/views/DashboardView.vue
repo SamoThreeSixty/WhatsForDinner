@@ -15,12 +15,12 @@ const quickActions = [
         routeName: 'app.pantry',
         icon: 'Larder'
     },
-    // {
-    //     title: 'Recipes saved and generate',
-    //     description: 'Keep family favorites and generate meals from available ingredients.',
-    //     routeName: 'app.recipes',
-    //     icon: 'Recipes'
-    // },
+    {
+        title: 'Recipes',
+        description: 'Keep household favorites and build manual recipes with steps, ingredients, and tags.',
+        routeName: 'app.recipes',
+        icon: 'Recipes'
+    },
     // {
     //     title: 'Shopping list',
     //     description: 'Auto-build lists from your weekly plan and what is currently missing.',

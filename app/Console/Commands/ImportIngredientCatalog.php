@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Support\Ingredients\IngredientCatalogImporter;
+use App\Support\Ingredients\IngredientImporter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use JsonException;
@@ -17,7 +17,7 @@ class ImportIngredientCatalog extends Command
 
     protected $description = 'Import ingredient catalog entries from a JSON extract';
 
-    public function handle(IngredientCatalogImporter $importer): int
+    public function handle(IngredientImporter $importer): int
     {
         $json = $this->option('url')
             ? $this->readFromUrl((string) $this->option('url'))
