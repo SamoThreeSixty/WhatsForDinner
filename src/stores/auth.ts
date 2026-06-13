@@ -107,7 +107,6 @@ export const useAuthStore = defineStore('auth', {
                     return;
                 }
 
-                this.authError = 'Unable to verify current session.';
             }
         }
     }
